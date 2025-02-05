@@ -53,7 +53,6 @@ Now, can you try to put the sentence together in French?
  </assistant:output>
  </example>
 
-
 <example>
  <user:input>
    It may rain today, should I get my umbrella from the closet?

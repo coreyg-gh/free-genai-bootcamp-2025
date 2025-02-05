@@ -1,5 +1,4 @@
 ## Prompting
-
 For the Meta AI prompt testing, the how to guide was consulted.  After testing a number of examples, specific options such as specifying a casual conversion tone and asking for the sentence to be broken down into smaller parts were added.
 
 Reference:

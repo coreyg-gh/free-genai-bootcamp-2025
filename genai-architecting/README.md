@@ -16,4 +16,4 @@ An open source LLM will be preferred in order to reduce costs.  Due to hardware 
 
 ## Data Strategy
 
-A small database will be used to store the language training materials and it is expected that this will be less than 10G in size.  Vector embeddings will be used as part of sentence generation to allow the student to practice using words with similar semantic meaning.
+A small database will be used to store the language training materials and it is expected that this will be less than 1G in size.  Vector embeddings will be used as part of sentence generation to allow the student to practice using words with similar semantic meaning.
