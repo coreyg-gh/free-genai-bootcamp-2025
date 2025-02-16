@@ -14,45 +14,38 @@ Asked Windsurf how to add these rules.
 Added contents of file to .windsurfrules for the workspace rules.
 Asked Windsurf to update it's memory with the file contents and that completed okay.
 
-Asked Windsurf the commands to create the database, returned:
+Asked Windsurf the commands to create the database, it returned:
+
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask && python3 -c "
 from app import create_app
 from lib.db import Db
-
-# Create Flask app
 app = create_app()
-
-# Initialize the database
 db = Db()
 db.init(app)
 print('Database initialized successfully!')
 "
 
-## tested db creation with no other setup
+I tested db creation with no other setup.
 Accepted the answer but the environment was not initialized as expected.
 
-##  Created the environment with:
+I created the environment with:
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask && python3 -m venv venv
 
-## Installed the dependencies
+Installed the dependencies:
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask && source venv/bin/activate && pip install -r requirements.txt
 
-## Created the database
+Created the database:
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask && source venv/bin/activate && python3 -c "
 from app import create_app
 from lib.db import Db
-
-# Create Flask app
 app = create_app()
-
-# Initialize the database
 db = Db()
 db.init(app)
 print('Database initialized successfully!')
 "
 
-## db setup summary
-## Windsurf provided a summary of the steps that were performed:
+Database setup summary:
+Windsurf provided a summary of the steps that were performed:
 1. Created a virtual environment
 2. Installed all required dependencies from requirements.txt
 3. Initialized the database, which:
@@ -62,52 +55,44 @@ print('Database initialized successfully!')
     * Imported Study Activities
 The database file words.db is now created in the backend-flask directory.
 
-## Connect to the database and verified it.
-## Next, setup dbeaver to connect to the words.db sqllite3 database and was able to view the tables and data okay.
+Connected to the database and verified it.
+Next, setup dbeaver to connect to the words.db sqllite3 database and was able to view the tables and data okay.
 
-## Configured terminal session to activate the environment
+Configured the terminal session to activate the environment
 source /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask/venv/bin/activate
-
-## Additionally created an alias in .zshrc file
+Additionally created an alias in .zshrc file
 cp -p $HOME/.zshrc $HOME/.zshrc_before_windsurf
 echo "alias activate_lang_portal='source /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask/venv/bin/activate'" >> ~/.zshrc
 
-## Test database access in newly activated environment
-
-## List all tables
+Tested database access in newly activated environment and it was okay:
 .tables
-## show example table structure/ddl
 .schema words
-## query from sample tables.
 SELECT * FROM words LIMIT 10;
 SELECT * FROM groups;
 SELECT * FROM study_activities;
 .quit
 
-## Try to run the backend flask application
-
+Tried to run the backend flask application
 source /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask/venv/bin/activate
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask
 python3 app.py
 
-## Open browser to see if it is working
-## Tested various endpoint URLs and data was returned, examples:
+Opened browser to see if it is working and tested various endpoint URLs and data was returned, examples:
 http://127.0.0.1:5000/api/study-activities
 http://127.0.0.1:5000/dashboard/stats
 http://127.0.0.1:5000/words
 
-## Asked Windsurf to example these route in more detail.
+Asked Windsurf to explain these route in more detail.
 
-## Moving onto the backend code as in the videos.
-## Attempted to add the missing APIs in the back-end code
+## Moved onto the backend code as in the videos.
+Attempted to add the missing APIs in the back-end code.
 
-## Found todo entries in the code, asked Windsurf to find the missing entries:
+Found todo entries in the code, also asked Windsurf to find the missing entries:
 1. In backend-flask/routes/study_sessions.py:
     * # todo /study_sessions POST: Implement POST endpoint for creating study sessions
     * # todo POST /study_sessions/:id/review: Implement review endpoint for a specific study session
 2. In backend-flask/routes/groups.py:
     * # todo GET /groups/:id/words/raw: Implement endpoint to retrieve raw words for a specific group
-
 Recommendations:
 1. Implement the missing endpoints in study_sessions.py:
     * Create a POST endpoint for /study_sessions
@@ -115,15 +100,15 @@ Recommendations:
 2. Implement the missing endpoint in groups.py:
     * Create a GET endpoint for /groups/:id/words/raw
 
-## Determine the specs for the request and adjusted the prompt to modify the code:
-## POST /api/study_activities
+Determined the specs for the request and adjusted the prompt to modify the code:
+POST /api/study_activities
 Request Params
 * group_id integer
 * study_activity_id integer
 JSON Response
   { "id": 124, "group_id": 123 }
 
-## Used Windsurf to help with adding:
+Used Windsurf to help with adding the endpoint:
 @app.route('/api/study-sessions', methods=['POST'])
   @cross_origin()
   def create_study_session():
@@ -179,11 +164,10 @@ JSON Response
       app.db.rollback()
       return jsonify({"error": str(e)}), 500
 
-## Used Windsurf to add the next endpoint:
-## Create a POST endpoint for /study_sessions/:id/review
-## Code added:
+Used Windsurf to add the next endpoint:
+Create a POST endpoint for /study_sessions/:id/review
+Code added:
 
-# Implement POST endpoint for reviewing a study session
   @app.route('/api/study-sessions/<int:id>/review', methods=['POST'])
   @cross_origin()
   def review_study_session(id):
@@ -246,10 +230,10 @@ JSON Response
       return jsonify({"error": str(e)}), 500
 
 
-## Added the last missing endpoint:
-## GET /groups/:id/words/raw: Implement endpoint to retrieve raw words for a specific group
-## An include for math was added as well as the following code:
-# Implement GET endpoint for retrieving raw words for a specific group
+Added the last missing endpoint:
+GET /groups/:id/words/raw: Implement endpoint to retrieve raw words for a specific group
+An include for math was added as well as the following code:
+
   @app.route('/groups/<int:id>/words/raw', methods=['GET'])
   @cross_origin()
   def get_group_raw_words(id):
@@ -315,16 +299,14 @@ JSON Response
     except Exception as e:
       return jsonify({"error": str(e)}), 500
 
-
-## Generated test request bodies:
-
-## /study_sessions:
+Generated test request bodies:
+/study_sessions:
 {
   "group_id": 1,
   "study_activity_id": 2
 }
 
-## /study_sessions/:id/review
+/study_sessions/:id/review
 {
   "review_items": [
     {
@@ -338,42 +320,41 @@ JSON Response
   ]
 }
 
-## /groups/:id/words/raw
-## Test get request:
-# Basic request
+/groups/:id/words/raw
+
+Testerd get request:
 curl http://127.0.0.1:5000/groups/1/words/raw
-# With pagination parameters
+With pagination parameters
 curl "http://127.0.0.1:5000/groups/1/words/raw?page=1&per_page=50"
 
-## Started the back-end server:
+Started the back-end server to perform the tests:
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask
 python3 app.py
 
-## After testing, it was determined that the groups.py code was invalid and using table_name
-## group_words instead of word_groups.  Corrected these and was then able to access the
-## endpoint successfully.
+After testing, it was determined that the groups.py code was invalid and using table_name
+group_words instead of word_groups.  Corrected these and was then able to access the
+endpoint successfully.
 curl http://127.0.0.1:5000/groups/1/words/raw
 
-## Next tested the 2 new post endpoints:
-## Test: /study_sessions POST
-
+Next tested the 2 new post endpoints:
+Test: /study_sessions POST
 curl -X POST http://127.0.0.1:5000/api/study-sessions \
      -H "Content-Type: application/json" \
      -d '{"group_id": 1, "study_activity_id": 1}'
 
-## This failed with many errors.
-## Windsurf suggested this was due to missing the rollback() method.
-## Added:
+This failed with many errors.
+Windsurf suggested this was due to missing the rollback() method.
+Added:
 def rollback(self):
     # Rollback the current transaction
     self.get().rollback()
 
-## Removed non-existant column study_sessions.user_id from the code
-## Would look at providing table definitions to Windsurf in the future.
-## Test curl post now worked okay.
-## Ran 3 times and checked data in study_sessions and 3 rows found.
+Removed non-existant column study_sessions.user_id from the code
+Would look at providing table definitions to Windsurf in the future.
+Test curl post now worked okay.
+Ran 3 times and checked data in study_sessions and 3 rows found.
 
-## Test endpoint: /study_sessions/:id/review
+Test endpoint: /study_sessions/:id/review
 
 curl -X POST http://127.0.0.1:5000/api/study-sessions/1/review \
      -H "Content-Type: application/json" \
@@ -384,9 +365,9 @@ curl -X POST http://127.0.0.1:5000/api/study-sessions/1/review \
          ]
      }'
 
-## Received error: "table word_review_items has no column named review_timestamp"
-## As above corrected the code to match the table definitions.
-## This time will try having Windsurf correct it using prompt:
+Received error: "table word_review_items has no column named review_timestamp"
+As above corrected the code to match the table definitions.
+This time will try having Windsurf correct it using prompt:
 
 Fix the code based on table word_review_items having the following definition:
 CREATE TABLE word_review_items (
@@ -399,8 +380,8 @@ CREATE TABLE word_review_items (
   FOREIGN KEY (study_session_id) REFERENCES study_sessions(id)
 );
 
-## Reviewed the changes to the insert statement and accepted them because they were correct.
-## Re-tested the post request and the data was returned.
+Reviewed the changes to the insert statement and accepted them because they were correct.
+Re-tested the post request and the data was returned.
 
 {
   "activity_name": "Typing Tutor",
@@ -411,6 +392,7 @@ CREATE TABLE word_review_items (
   "start_time": "2025-02-12 17:46:55.175449"
 }
 
+Downloaded the ExamPro code from before the endpoints were removed and compared to my changes.
 
 ## Continuing with reviewing the OPEA videos, setting up Docker, etc.
 ## Have switched to Windows desktop with WLS and will set that up.
