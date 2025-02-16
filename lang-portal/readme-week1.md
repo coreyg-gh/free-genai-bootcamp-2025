@@ -392,7 +392,7 @@ Re-tested the post request and the data was returned.
   "start_time": "2025-02-12 17:46:55.175449"
 }
 
-Downloaded the ExamPro code from before the endpoints were removed and compared to my changes.
+## Downloaded the ExamPro code from before the endpoints were removed and compared to my changes.
 
-Continuing with reviewing the OPEA videos, setting up Docker, etc.
-Have switched to Windows desktop with WLS and will set that up.
+# Continuing with reviewing the OPEA videos, setting up Docker, etc.
+# Have switched to Windows desktop with WLS and will set that up.
