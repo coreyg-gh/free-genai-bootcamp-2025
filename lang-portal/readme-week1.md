@@ -1,5 +1,14 @@
-## experimented with adding rules as in training video
-## downloaded core-editor-rules.md file from GitHub with example rules.
+## Week 1 Tasks Completed
+# Main Goals:
+1. Fix the missing endpoints in the backend code.
+2. Become familiar with AI code assistants, using Windsurf for this week.
+3. Become familiar with OPEA and it's components.
+# Outstanding Tasks:
+1. Finish watching remaining videos
+2. Documentation reading
+
+# Experimented with adding rules as in the training video.
+Downloaded core-editor-rules.md file from GitHub with example rules.
 https://gist.github.com/yifanzz/3cfb8f9065769ffbf94348255f85597d#file-code-editor-rules-md
 Asked Windsurf how to add these rules.
 Added contents of file to .windsurfrules for the workspace rules.
@@ -19,11 +28,10 @@ db.init(app)
 print('Database initialized successfully!')
 "
 
-## test db creation with no other setup
-Accepted the answer but the environment was not initialized.
+## tested db creation with no other setup
+Accepted the answer but the environment was not initialized as expected.
 
-##  Created environment with:
-
+##  Created the environment with:
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask && python3 -m venv venv
 
 ## Installed the dependencies
@@ -54,16 +62,14 @@ print('Database initialized successfully!')
     * Imported Study Activities
 The database file words.db is now created in the backend-flask directory.
 
-## Connect to database and verify
-Next, setup dbeaver to connect to the words.db sqllite3 database and was able to view the tables and data okay.
-￼
+## Connect to the database and verified it.
+## Next, setup dbeaver to connect to the words.db sqllite3 database and was able to view the tables and data okay.
 
 ## Configured terminal session to activate the environment
 source /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask/venv/bin/activate
 
 ## Additionally created an alias in .zshrc file
 cp -p $HOME/.zshrc $HOME/.zshrc_before_windsurf
-
 echo "alias activate_lang_portal='source /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask/venv/bin/activate'" >> ~/.zshrc
 
 ## Test database access in newly activated environment
@@ -78,28 +84,24 @@ SELECT * FROM groups;
 SELECT * FROM study_activities;
 .quit
 
-## try to run the backend-flask application
+## Try to run the backend flask application
 
 source /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask/venv/bin/activate
-
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask
 python3 app.py
 
 ## Open browser to see if it is working
-http://127.0.0.1:5000
-
-## this failed with not found error, investigated and checked route information
-## Tested various endpoint URLs and data was returned, examples
+## Tested various endpoint URLs and data was returned, examples:
 http://127.0.0.1:5000/api/study-activities
 http://127.0.0.1:5000/dashboard/stats
 http://127.0.0.1:5000/words
 
 ## Asked Windsurf to example these route in more detail.
 
-## Moving onto the backend code as in the videos
+## Moving onto the backend code as in the videos.
 ## Attempted to add the missing APIs in the back-end code
 
-## Asked Windsurf to find the missing entries:
+## Found todo entries in the code, asked Windsurf to find the missing entries:
 1. In backend-flask/routes/study_sessions.py:
     * # todo /study_sessions POST: Implement POST endpoint for creating study sessions
     * # todo POST /study_sessions/:id/review: Implement review endpoint for a specific study session
@@ -113,7 +115,7 @@ Recommendations:
 2. Implement the missing endpoint in groups.py:
     * Create a GET endpoint for /groups/:id/words/raw
 
-## Determine the specs for the request and adjusted prompt to modify the code:
+## Determine the specs for the request and adjusted the prompt to modify the code:
 ## POST /api/study_activities
 Request Params
 * group_id integer
@@ -343,7 +345,7 @@ curl http://127.0.0.1:5000/groups/1/words/raw
 # With pagination parameters
 curl "http://127.0.0.1:5000/groups/1/words/raw?page=1&per_page=50"
 
-## Start the back-end server:
+## Started the back-end server:
 cd /Users/corey/Documents\ -\ Local/Training/GenAI_Bootcamp/local-dev/lang-portal/backend-flask
 python3 app.py
 
@@ -352,14 +354,14 @@ python3 app.py
 ## endpoint successfully.
 curl http://127.0.0.1:5000/groups/1/words/raw
 
-## Next test the 2 new post endpoints:
+## Next tested the 2 new post endpoints:
 ## Test: /study_sessions POST
 
 curl -X POST http://127.0.0.1:5000/api/study-sessions \
      -H "Content-Type: application/json" \
      -d '{"group_id": 1, "study_activity_id": 1}'
 
-## this failed with many errors.
+## This failed with many errors.
 ## Windsurf suggested this was due to missing the rollback() method.
 ## Added:
 def rollback(self):
@@ -367,11 +369,9 @@ def rollback(self):
     self.get().rollback()
 
 ## Removed non-existant column study_sessions.user_id from the code
-## Would look at providing table definitions to Windsurf in the future
+## Would look at providing table definitions to Windsurf in the future.
 ## Test curl post now worked okay.
-## Ran 3 times and checked data in study_sessions:
-￼
-
+## Ran 3 times and checked data in study_sessions and 3 rows found.
 
 ## Test endpoint: /study_sessions/:id/review
 
@@ -385,7 +385,7 @@ curl -X POST http://127.0.0.1:5000/api/study-sessions/1/review \
      }'
 
 ## Received error: "table word_review_items has no column named review_timestamp"
-## As above correct the code to match the table definitions.
+## As above corrected the code to match the table definitions.
 ## This time will try having Windsurf correct it using prompt:
 
 Fix the code based on table word_review_items having the following definition:
@@ -410,3 +410,7 @@ CREATE TABLE word_review_items (
   "review_items_count": 0,
   "start_time": "2025-02-12 17:46:55.175449"
 }
+
+
+## Continuing with reviewing the OPEA videos, setting up Docker, etc.
+## Have switched to Windows desktop with WLS and will set that up.
