@@ -1,0 +1,22 @@
+{
+  "id": "chatcmpl-rxQEgY8EfAYZkBpgnbe63k",
+  "object": "chat.completion",
+  "created": 1740589961,
+  "model": "chatqna",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "<think>\nOkay, so I want to figure out why the sky appears blue. Hmm, I know that the sky looks blue most of the time, but sometimes it can be different colors like red or orange during sunrise or sunset. So, what makes the sky blue?\n\nI remember when I was a kid, my dad used to explain this to me, saying something about tiny particles in the air scattering light. But now, as an adult, I want to understand it more deeply.\n\nFirst, let"
+      },
+      "finish_reason": "stop",
+      "metadata": null
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 0,
+    "total_tokens": 0,
+    "completion_tokens": 0
+  }
+}

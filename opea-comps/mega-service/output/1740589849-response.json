@@ -1,0 +1,22 @@
+{
+  "id": "chatcmpl-NM9TE7ZKqxyrWjpYjauLAK",
+  "object": "chat.completion",
+  "created": 1740589850,
+  "model": "chatqna",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "The sky appears blue to us because of a phenomenon called Rayleigh scattering. It's named after the British physicist Lord Rayleigh, who first described it in the late 19th century.\n\nHere's what happens: when sunlight enters Earth's atmosphere, it encounters tiny molecules of gases such as nitrogen and oxygen. These molecules scatter the light in all directions, but they scatter shorter (blue) wavelengths more than longer (red) wavelengths.\n\nThis is because the smaller molecules are more efficient at scattering the blue"
+      },
+      "finish_reason": "stop",
+      "metadata": null
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 0,
+    "total_tokens": 0,
+    "completion_tokens": 0
+  }
+}

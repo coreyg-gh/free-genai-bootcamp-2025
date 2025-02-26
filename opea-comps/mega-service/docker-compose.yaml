@@ -1,0 +1,38 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+      - "11433:11433"
+      - "11434:11434"
+    ipc: host
+    environment:
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      COLLECTOR_ZIPKIN_HOST_PORT: 11433
+    restart: unless-stopped
+  ollama-server:
+    image: ollama/ollama:latest
+    runtime: nvidia
+    ports:
+      - ${LLM_ENDPOINT_PORT:-8008}:11434
+    hostname: 0.0.0.0
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      no_proxy: ${no_proxy}
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      LLM_MODEL_ID: ${LLM_MODEL_ID}
+      host_ip: ${host_ip}
+
+volumes:
+  ollama_data:
+
+  networks:
+  default:
+    driver: bridge
