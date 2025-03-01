@@ -17,119 +17,16 @@ class TranscriptStructurer:
         self.model_id = model_id
         self.ollama_url = ollama_url
         self.prompts = {
-            1: """Extract questions from section 問題1 of this JLPT transcript where the answer can be determined solely from the conversation without needing visual aids.
-            
-            ONLY include questions that meet these criteria:
-            - The answer can be determined purely from the spoken dialogue
-            - No spatial/visual information is needed (like locations, layouts, or physical appearances)
-            - No physical objects or visual choices need to be compared
-            
-            For example, INCLUDE questions about:
-            - Times and dates
-            - Numbers and quantities
-            - Spoken choices or decisions
-            - Clear verbal directions
-            
-            DO NOT include questions about:
-            - Physical locations that need a map or diagram
-            - Visual choices between objects
-            - Spatial arrangements or layouts
-            - Physical appearances of people or things
-
-            Format each question exactly like this:
-
-            <question>
-            Introduction:
-            [the situation setup in japanese]
-            
-            Conversation:
-            [the dialogue in japanese]
-            
-            Question:
-            [the question being asked in japanese]
-
-            Options:
-            1. [first option in japanese]
-            2. [second option in japanese]
-            3. [third option in japanese]
-            4. [fourth option in japanese]
-            </question>
-
-            Rules:
-            - Only extract questions from the 問題1 section
-            - Only include questions where answers can be determined from dialogue alone
-            - Ignore any practice examples (marked with 例)
-            - Do not translate any Japanese text
-            - Do not include any section descriptions or other text
-            - Output questions one after another with no extra text between them
-            """,
-            
-            2: """Extract questions from section 問題2 of this JLPT transcript where the answer can be determined solely from the conversation without needing visual aids.
-            
-            ONLY include questions that meet these criteria:
-            - The answer can be determined purely from the spoken dialogue
-            - No spatial/visual information is needed (like locations, layouts, or physical appearances)
-            - No physical objects or visual choices need to be compared
-            
-            For example, INCLUDE questions about:
-            - Times and dates
-            - Numbers and quantities
-            - Spoken choices or decisions
-            - Clear verbal directions
-            
-            DO NOT include questions about:
-            - Physical locations that need a map or diagram
-            - Visual choices between objects
-            - Spatial arrangements or layouts
-            - Physical appearances of people or things
-
-            Format each question exactly like this:
-
-            <question>
-            Introduction:
-            [the situation setup in japanese]
-            
-            Conversation:
-            [the dialogue in japanese]
-            
-            Question:
-            [the question being asked in japanese]
-            </question>
-
-            Rules:
-            - Only extract questions from the 問題2 section
-            - Only include questions where answers can be determined from dialogue alone
-            - Ignore any practice examples (marked with 例)
-            - Do not translate any Japanese text
-            - Do not include any section descriptions or other text
-            - Output questions one after another with no extra text between them
-            """,
-            
-            3: """Extract all questions from section 問題3 of this JLPT transcript.
-            Format each question exactly like this:
-
-            <question>
-            Situation:
-            [the situation in japanese where a phrase is needed]
-            
-            Question:
-            何と言いますか
-            </question>
-
-            Rules:
-            - Only extract questions from the 問題3 section
-            - Ignore any practice examples (marked with 例)
-            - Do not translate any Japanese text
-            - Do not include any section descriptions or other text
-            - Output questions one after another with no extra text between them
-            """
-        }
+            1: """ Why is the sky blue?""",
+            2: """ At what temperature does water boil?""",
+            3: """ Are dogs or cats a better pet?"""}
 
     def _invoke_ollama(self, prompt: str, transcript: str) -> Optional[str]:
         print("Start of invoke_ollama")
         full_prompt = f"{prompt}\n\nHere's the transcript:\n{transcript}"
         print("full_prompt length: ", str(len(full_prompt)))
         headers = {'Content-Type': 'application/json'}
+        full_prompt = "Why is the sky blue?"
         try:
             payload = {
                 "model": self.model_id,
