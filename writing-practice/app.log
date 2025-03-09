@@ -1,0 +1,58 @@
+2025-02-12 18:47:22,839 - MY_APP - Initializing Japanese Learning App...
+2025-02-12 18:47:22,839 - MY_APP - http://localhost:5000/api/groups/1/words/raw
+2025-02-12 18:47:22,849 - MY_APP - Response status: 200
+2025-02-12 18:47:22,849 - MY_APP - Received data for group: Core Verbs
+2025-02-12 18:47:22,850 - MY_APP - Entering render_setup_state
+2025-02-12 18:47:22,892 - MY_APP - Generate button state: False
+2025-02-12 18:47:24,358 - MY_APP - Initializing Japanese Learning App...
+2025-02-12 18:47:24,359 - MY_APP - http://localhost:5000/api/groups/1/words/raw
+2025-02-12 18:47:24,372 - MY_APP - Response status: 200
+2025-02-12 18:47:24,372 - MY_APP - Received data for group: Core Verbs
+2025-02-12 18:49:04,751 - MY_APP - Initializing Japanese Learning App...
+2025-02-12 18:49:04,751 - MY_APP - http://localhost:5000/api/groups/1/words/raw
+2025-02-12 18:49:04,762 - MY_APP - Response status: 200
+2025-02-12 18:49:04,763 - MY_APP - Received data for group: Core Verbs
+2025-02-12 18:49:04,763 - MY_APP - Entering render_setup_state
+2025-02-12 18:49:04,790 - MY_APP - Generate button state: False
+2025-02-12 18:49:08,239 - MY_APP - Initializing Japanese Learning App...
+2025-02-12 18:49:08,239 - MY_APP - http://localhost:5000/api/groups/1/words/raw
+2025-02-12 18:49:08,250 - MY_APP - Response status: 200
+2025-02-12 18:49:08,250 - MY_APP - Received data for group: Core Verbs
+2025-03-08 19:06:17,775 - MY_APP - Initializing Japanese Learning App...
+2025-03-08 19:06:25,141 - MY_APP - Entering render_setup_state
+2025-03-08 19:06:25,141 - MY_APP - No vocabulary loaded
+2025-03-08 19:14:31,842 - MY_APP - Initializing Japanese Learning App...
+2025-03-08 19:14:39,634 - MY_APP - Entering render_setup_state
+2025-03-08 19:14:39,634 - MY_APP - No vocabulary loaded
+2025-03-08 19:18:41,439 - MY_APP - Initializing Japanese Learning App...
+2025-03-08 19:18:41,440 - MY_APP - http://localhost:5000/groups/1/words/raw
+2025-03-08 19:18:41,461 - MY_APP - Response status: 500
+2025-03-08 19:18:41,461 - MY_APP - API request failed: 500
+2025-03-08 19:18:41,462 - MY_APP - Entering render_setup_state
+2025-03-08 19:18:41,463 - MY_APP - No vocabulary loaded
+2025-03-08 19:34:50,210 - MY_APP - Initializing Japanese Learning App...
+2025-03-08 19:34:50,210 - MY_APP - http://localhost:5000/groups/1/words/raw
+2025-03-08 19:34:50,235 - MY_APP - Response status: 200
+2025-03-08 19:34:50,236 - MY_APP - Received data for group: unknown
+2025-03-08 19:34:50,236 - MY_APP - Entering render_setup_state
+2025-03-08 19:34:50,239 - MY_APP - Generate button state: False
+2025-03-08 19:37:10,222 - MY_APP - Initializing Japanese Learning App...
+2025-03-08 19:37:10,222 - MY_APP - http://localhost:5000/groups/1/words/raw
+2025-03-08 19:37:10,237 - MY_APP - Response status: 200
+2025-03-08 19:37:10,238 - MY_APP - Received data for group: unknown
+2025-03-09 08:50:52,914 - MY_APP - Initializing Japanese Learning App...
+2025-03-09 08:50:52,914 - MY_APP - http://localhost:5000/groups/1/words/raw
+2025-03-09 08:50:52,954 - MY_APP - Response status: 200
+2025-03-09 08:50:52,955 - MY_APP - Received data for group: unknown
+2025-03-09 08:50:52,956 - MY_APP - Entering render_setup_state
+2025-03-09 08:50:52,958 - MY_APP - Generate button state: False
+2025-03-09 08:53:50,655 - MY_APP - Initializing Japanese Learning App...
+2025-03-09 08:53:50,656 - MY_APP - http://localhost:5000/groups/1/words/raw
+2025-03-09 08:53:50,671 - MY_APP - Response status: 200
+2025-03-09 08:53:50,672 - MY_APP - Received data for group: unknown
+2025-03-09 08:55:00,140 - MY_APP - Initializing Japanese Learning App...
+2025-03-09 08:55:00,141 - MY_APP - http://localhost:5000/groups/1/words/raw
+2025-03-09 08:55:00,213 - MY_APP - Response status: 200
+2025-03-09 08:55:00,213 - MY_APP - Received data for group: unknown
+2025-03-09 08:55:00,214 - MY_APP - Entering render_setup_state
+2025-03-09 08:55:00,215 - MY_APP - Generate button state: False
