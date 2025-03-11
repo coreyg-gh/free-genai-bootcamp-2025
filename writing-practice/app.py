@@ -6,6 +6,7 @@ from typing import Optional, List, Dict
 import openai
 import logging
 import random
+import os
 
 # Setup Custom Logging -----------------------
 # Create a custom logger for your app only
@@ -30,6 +31,11 @@ logger.addHandler(fh)
 # Prevent propagation to root logger
 logger.propagate = False
 
+# Set OpenAI API key
+openai.api_key = os.getenv('OPENAI_API_KEY')
+if not openai.api_key:
+    raise ValueError("OPENAI_API_KEY environment variable is not set")
+
 # State Management
 class AppState(Enum):
     SETUP = "setup"
@@ -52,47 +58,48 @@ class JapaneseLearningApp:
             st.session_state.review_data = None
             
     def load_vocabulary(self):
-        """Fetch vocabulary from API using group_id from query parameters"""
+        """Fetch vocabulary from API using group_id"""
         try:
             # Get group_id from query parameters
-            group_id = st.query_params.get('group_id', '')
+            group_id = st.query_params.get('group_id', '1')  # Default to '1' if not provided
             
-            if not group_id:
-                st.error("No group_id provided in query parameters")
-                self.vocabulary = None
-                return
-                
-            # Make API request with the actual group_id
-            # url = f'http://localhost:5000/api/groups/{group_id}/words/raw'
+            logger.debug(f"Attempting to load vocabulary with group_id: {group_id}")
+            
+            # Make API request with correct endpoint
             url = f'http://localhost:5000/groups/{group_id}/words/raw'
-            logger.debug(url)
-            response = requests.get(url)
-            logger.debug(f"Response status: {response.status_code}")
+            logger.debug(f"Making API request to: {url}")
             
-            # Check if response is successful and contains data
+            response = requests.get(url)
+            logger.debug(f"API Response status: {response.status_code}")
+            logger.debug(f"API Response content: {response.text[:200]}...")  # Log first 200 chars of response
+            
             if response.status_code == 200:
                 try:
                     data = response.json()
-                    logger.debug(f"Received data for group: {data.get('group_name', 'unknown')}") 
-                    self.vocabulary = data
-                except requests.exceptions.JSONDecodeError as e:
+                    logger.debug(f"Successfully parsed JSON. Items count: {len(data.get('items', []))}")
+                    self.vocabulary = {'words': data.get('items', [])}  # Restructure the data to match expected format
+                except json.JSONDecodeError as e:
                     logger.error(f"JSON decode error: {e}")
-                    st.error(f"Invalid JSON response from API: {response.text}")
+                    st.error(f"Invalid JSON response from API: {response.text[:200]}")
                     self.vocabulary = None
             else:
                 logger.error(f"API request failed: {response.status_code}")
                 st.error(f"API request failed with status code: {response.status_code}")
                 self.vocabulary = None
         except Exception as e:
-            logger.error(f"Failed to load vocabulary: {e}")
+            logger.error(f"Failed to load vocabulary: {str(e)}")
             st.error(f"Failed to load vocabulary: {str(e)}")
             self.vocabulary = None
 
     def generate_sentence(self, word: dict) -> str:
         """Generate a sentence using OpenAI API"""
-        kanji = word.get('kanji', '')
+        # Get japanese word from the dictionary, falling back to different fields
+        japanese_word = word.get('japanese', word.get('kanji', ''))
         
-        prompt = f"""Generate a simple Japanese sentence using the word '{kanji}'.
+        logger.debug(f"Generating sentence for word: {japanese_word}")
+        logger.debug(f"Full word data: {word}")
+        
+        prompt = f"""Generate a simple Japanese sentence using the word '{japanese_word}'.
         The grammar should be scoped to JLPTN5 grammar.
         You can use the following vocabulary to construct a simple sentence:
         - simple objects eg. book, car, ramen, sushi
@@ -104,13 +111,18 @@ class JapaneseLearningApp:
         English: [English translation]
         """
         
-        logger.debug(f"Generating sentence for word: {kanji}")
-        client = openai.OpenAI()
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content.strip()
+        try:
+            client = openai.OpenAI()
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            generated_text = response.choices[0].message.content.strip()
+            logger.debug(f"Generated response from OpenAI: {generated_text}")
+            return generated_text
+        except Exception as e:
+            logger.error(f"Error generating sentence with OpenAI: {str(e)}")
+            raise
 
     def grade_submission(self, image) -> Dict:
         """Process image submission and grade it"""
@@ -126,40 +138,30 @@ class JapaneseLearningApp:
     def render_setup_state(self):
         """Render the setup state UI"""
         logger.debug("Entering render_setup_state")
-        st.title("Japanese Writing Practice")
         
-        if not self.vocabulary:
-            logger.debug("No vocabulary loaded")
-            st.warning("No vocabulary loaded. Please make sure a valid group_id is provided.")
-            return
+        # Display vocabulary status
+        if self.vocabulary and self.vocabulary.get('words'):
+            word_count = len(self.vocabulary['words'])
+            logger.debug(f"Loaded vocabulary with {word_count} words")
+            st.write(f"Loaded {word_count} words")
             
-        #st.subheader(f"Group: {self.group_name}")
-        
-        # Add key to button to ensure proper state management
-        generate_button = st.button("Generate Sentence", key="generate_sentence_btn")
-        logger.debug(f"Generate button state: {generate_button}")
-        
-        if generate_button:
-            logger.info("Generate button clicked")
-            st.session_state['last_click'] = 'generate_button'
-            logger.debug(f"Session state after click: {st.session_state}")
-            # Pick a random word from vocabulary
-            if not self.vocabulary.get('words'):
-                st.error("No words found in the vocabulary group")
-                return
+            # Generate sentence button
+            if st.button("Generate Sentence", key="generate_btn"):
+                logger.debug("Generate button clicked")
+                word = random.choice(self.vocabulary['words'])
+                sentence = self.generate_sentence(word)
                 
-            word = random.choice(self.vocabulary['words'])
-            logger.debug(f"Selected word: {word.get('english')} - {word.get('kanji')}")
-            
-            # Generate and display the sentence
-            sentence = self.generate_sentence(word)
-            st.markdown("### Generated Sentence")
-            st.write(sentence)
-            
-            # Store the current sentence and move to practice state
-            st.session_state.current_sentence = sentence
-            st.session_state.app_state = AppState.PRACTICE
-            st.experimental_rerun()
+                if sentence:
+                    st.session_state.current_sentence = sentence
+                    if st.button("Continue to Practice"):
+                        st.session_state.app_state = AppState.PRACTICE
+                        st.experimental_rerun()
+        else:
+            logger.warning("No vocabulary loaded")
+            st.error("No vocabulary loaded. Please check your connection to the API.")
+            if st.button("Retry Loading"):
+                self.load_vocabulary()
+                st.experimental_rerun()
 
     def render_practice_state(self):
         """Render the practice state UI"""
@@ -192,7 +194,17 @@ class JapaneseLearningApp:
             st.experimental_rerun()
 
     def run(self):
-        """Main app loop"""
+        """Main method to run the app"""
+        logger.debug("Running app...")
+        
+        # Basic app structure
+        st.title("Japanese Writing Practice")
+        
+        # Show current state for debugging
+        logger.debug(f"Current app state: {st.session_state.app_state}")
+        logger.debug(f"Vocabulary loaded: {self.vocabulary is not None}")
+        
+        # Render appropriate state
         if st.session_state.app_state == AppState.SETUP:
             self.render_setup_state()
         elif st.session_state.app_state == AppState.PRACTICE:
