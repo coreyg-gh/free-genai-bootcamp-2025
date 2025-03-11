@@ -232,3 +232,564 @@
 2025-03-11 13:54:05,166 - MY_APP - Generating sentence for word: 手伝う
 2025-03-11 13:54:05,166 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to help', 'japanese': '手伝う', 'romaji': 'tetsudau', 'wrong_count': 0}
 2025-03-11 13:54:08,700 - MY_APP - Error generating sentence with OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2025-03-11 14:10:56,737 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:10:56,737 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:10:56,739 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:10:56,760 - MY_APP - API Response status: 200
+2025-03-11 14:10:56,762 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:10:56,764 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:10:56,765 - MY_APP - Running app...
+2025-03-11 14:10:56,766 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:10:56,767 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:10:56,768 - MY_APP - Entering render_setup_state
+2025-03-11 14:10:56,768 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:14:18,498 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:14:18,499 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:14:18,500 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:14:18,517 - MY_APP - API Response status: 200
+2025-03-11 14:14:18,517 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:14:18,517 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:14:18,518 - MY_APP - Running app...
+2025-03-11 14:14:18,518 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:14:18,519 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:14:18,520 - MY_APP - Entering render_setup_state
+2025-03-11 14:14:18,520 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:14:18,521 - MY_APP - Generate button clicked
+2025-03-11 14:14:18,522 - MY_APP - Generating sentence for word: 働く
+2025-03-11 14:14:18,522 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to work', 'japanese': '働く', 'romaji': 'hataraku', 'wrong_count': 0}
+2025-03-11 14:14:19,876 - MY_APP - Generated response from OpenAI: Japanese: 私は明日働きます。  
+English: I will work tomorrow.
+2025-03-11 14:14:24,354 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:14:24,355 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:14:24,355 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:14:24,376 - MY_APP - API Response status: 200
+2025-03-11 14:14:24,376 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:14:24,377 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:14:24,378 - MY_APP - Running app...
+2025-03-11 14:14:24,379 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:14:24,379 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:14:24,380 - MY_APP - Entering render_setup_state
+2025-03-11 14:14:24,380 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:15:27,607 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:15:27,608 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:15:27,608 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:15:27,632 - MY_APP - API Response status: 200
+2025-03-11 14:15:27,633 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:15:27,633 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:15:27,634 - MY_APP - Running app...
+2025-03-11 14:15:34,924 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:15:34,924 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:15:34,925 - MY_APP - Entering render_setup_state
+2025-03-11 14:15:34,925 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:15:44,773 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:15:44,774 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:15:44,774 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:15:44,794 - MY_APP - API Response status: 200
+2025-03-11 14:15:44,795 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:15:44,795 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:15:44,796 - MY_APP - Running app...
+2025-03-11 14:15:44,797 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:15:44,798 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:15:44,798 - MY_APP - Entering render_setup_state
+2025-03-11 14:15:44,798 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:15:44,799 - MY_APP - Generate button clicked
+2025-03-11 14:15:44,800 - MY_APP - Generating sentence for word: 会う
+2025-03-11 14:15:44,800 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to meet', 'japanese': '会う', 'romaji': 'au', 'wrong_count': 0}
+2025-03-11 14:15:46,472 - MY_APP - Generated response from OpenAI: Japanese: 明日、友達に会う。  
+English: I will meet my friend tomorrow.
+2025-03-11 14:15:58,711 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:15:58,711 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:15:58,712 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:15:58,732 - MY_APP - API Response status: 200
+2025-03-11 14:15:58,733 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:15:58,734 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:15:58,735 - MY_APP - Running app...
+2025-03-11 14:15:58,736 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:15:58,737 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:15:58,737 - MY_APP - Entering render_setup_state
+2025-03-11 14:15:58,738 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:16:36,804 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:16:36,805 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:16:36,806 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:16:36,825 - MY_APP - API Response status: 200
+2025-03-11 14:16:36,825 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:16:36,826 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:16:36,826 - MY_APP - Running app...
+2025-03-11 14:16:36,828 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:16:36,829 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:16:36,829 - MY_APP - Entering render_setup_state
+2025-03-11 14:16:36,830 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:16:36,831 - MY_APP - Generate button clicked
+2025-03-11 14:16:36,831 - MY_APP - Generating sentence for word: つける
+2025-03-11 14:16:36,832 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to turn on', 'japanese': 'つける', 'romaji': 'tsukeru', 'wrong_count': 0}
+2025-03-11 14:16:37,869 - MY_APP - Generated response from OpenAI: Japanese: 私は明日ラーメンをつけます。  
+English: I will attach (or add) ramen tomorrow.
+2025-03-11 14:16:42,603 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:16:42,604 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:16:42,604 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:16:42,626 - MY_APP - API Response status: 200
+2025-03-11 14:16:42,627 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:16:42,627 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:16:42,628 - MY_APP - Running app...
+2025-03-11 14:16:42,629 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:16:42,630 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:16:42,630 - MY_APP - Entering render_setup_state
+2025-03-11 14:16:42,631 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:31:47,327 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:31:47,328 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:31:47,328 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:31:47,352 - MY_APP - API Response status: 200
+2025-03-11 14:31:47,352 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:31:47,353 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:31:47,353 - MY_APP - Running app...
+2025-03-11 14:31:55,170 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:31:55,171 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:31:55,171 - MY_APP - Entering render_setup_state
+2025-03-11 14:31:55,172 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:32:01,304 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:32:01,305 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:32:01,306 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:32:01,329 - MY_APP - API Response status: 200
+2025-03-11 14:32:01,329 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:32:01,330 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:32:01,331 - MY_APP - Running app...
+2025-03-11 14:32:01,332 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:32:01,334 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:32:01,335 - MY_APP - Entering render_setup_state
+2025-03-11 14:32:01,336 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:32:01,338 - MY_APP - Generate button clicked
+2025-03-11 14:32:01,339 - MY_APP - Generating sentence for word: 急ぐ
+2025-03-11 14:32:01,341 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to hurry', 'japanese': '急ぐ', 'romaji': 'isogu', 'wrong_count': 0}
+2025-03-11 14:32:03,592 - MY_APP - Generated response from OpenAI: Japanese: 明日、ラーメンを食べるために急ぐ。  
+English: I will hurry to eat ramen tomorrow.
+2025-03-11 14:32:18,179 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:32:18,179 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:32:18,180 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:32:18,198 - MY_APP - API Response status: 200
+2025-03-11 14:32:18,199 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:32:18,199 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:32:18,200 - MY_APP - Running app...
+2025-03-11 14:32:18,201 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:32:18,202 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:32:18,202 - MY_APP - Entering render_setup_state
+2025-03-11 14:32:18,203 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:32:18,204 - MY_APP - Continue to Practice clicked
+2025-03-11 14:33:56,080 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:33:56,082 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:33:56,082 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:33:56,101 - MY_APP - API Response status: 200
+2025-03-11 14:33:56,102 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:33:56,102 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:33:56,103 - MY_APP - Running app...
+2025-03-11 14:34:03,463 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:34:03,464 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:34:03,465 - MY_APP - Entering render_setup_state
+2025-03-11 14:34:03,465 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:34:10,830 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:34:10,832 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:34:10,832 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:34:10,854 - MY_APP - API Response status: 200
+2025-03-11 14:34:10,854 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:34:10,855 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:34:10,856 - MY_APP - Running app...
+2025-03-11 14:34:10,857 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:34:10,857 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:34:10,858 - MY_APP - Entering render_setup_state
+2025-03-11 14:34:10,858 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:34:10,860 - MY_APP - Generate button clicked
+2025-03-11 14:34:10,860 - MY_APP - Generating sentence for word: あげる
+2025-03-11 14:34:10,861 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to give', 'japanese': 'あげる', 'romaji': 'ageru', 'wrong_count': 0}
+2025-03-11 14:34:12,349 - MY_APP - Generated response from OpenAI: Japanese: 明日、友達に本をあげる。  
+English: Tomorrow, I will give a book to my friend.
+2025-03-11 14:34:20,161 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:34:20,162 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:34:20,162 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:34:20,185 - MY_APP - API Response status: 200
+2025-03-11 14:34:20,185 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:34:20,186 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:34:20,187 - MY_APP - Running app...
+2025-03-11 14:34:20,188 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:34:20,188 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:34:20,189 - MY_APP - Entering render_setup_state
+2025-03-11 14:34:20,189 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:34:20,192 - MY_APP - Continue to Practice clicked
+2025-03-11 14:34:20,242 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:34:20,243 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:34:20,243 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:34:20,287 - MY_APP - API Response status: 200
+2025-03-11 14:34:20,288 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:34:20,289 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:34:20,290 - MY_APP - Running app...
+2025-03-11 14:34:20,291 - MY_APP - Current app state: AppState.PRACTICE
+2025-03-11 14:34:20,298 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:03,709 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:37:03,720 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:37:03,720 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:37:03,748 - MY_APP - API Response status: 200
+2025-03-11 14:37:03,749 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:37:03,750 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:37:03,753 - MY_APP - Running app...
+2025-03-11 14:37:03,754 - MY_APP - Current app state: AppState.PRACTICE
+2025-03-11 14:37:03,754 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:08,558 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:37:08,559 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:37:08,559 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:37:08,583 - MY_APP - API Response status: 200
+2025-03-11 14:37:08,583 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:37:08,585 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:37:08,586 - MY_APP - Running app...
+2025-03-11 14:37:08,588 - MY_APP - Current app state: AppState.PRACTICE
+2025-03-11 14:37:08,589 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:08,651 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:37:08,651 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:37:08,651 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:37:08,673 - MY_APP - API Response status: 200
+2025-03-11 14:37:08,674 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:37:08,680 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:37:08,681 - MY_APP - Running app...
+2025-03-11 14:37:08,682 - MY_APP - Current app state: AppState.REVIEW
+2025-03-11 14:37:08,684 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:21,737 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:37:21,737 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:37:21,737 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:37:21,760 - MY_APP - API Response status: 200
+2025-03-11 14:37:21,760 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:37:21,762 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:37:21,763 - MY_APP - Running app...
+2025-03-11 14:37:21,765 - MY_APP - Current app state: AppState.REVIEW
+2025-03-11 14:37:21,778 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:21,837 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:37:21,837 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:37:21,838 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:37:21,858 - MY_APP - API Response status: 200
+2025-03-11 14:37:21,858 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:37:21,859 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:37:21,860 - MY_APP - Running app...
+2025-03-11 14:37:21,863 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:37:21,863 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:21,864 - MY_APP - Entering render_setup_state
+2025-03-11 14:37:21,865 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:37:23,415 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:37:23,415 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:37:23,416 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:37:23,450 - MY_APP - API Response status: 200
+2025-03-11 14:37:23,451 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:37:23,451 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:37:23,452 - MY_APP - Running app...
+2025-03-11 14:37:23,453 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:37:23,454 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:37:23,455 - MY_APP - Entering render_setup_state
+2025-03-11 14:37:23,456 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:37:23,459 - MY_APP - Generate button clicked
+2025-03-11 14:37:23,459 - MY_APP - Generating sentence for word: 合う
+2025-03-11 14:37:23,460 - MY_APP - Full word data: {'correct_count': 0, 'english': 'to meet; to fit', 'japanese': '合う', 'romaji': 'au', 'wrong_count': 0}
+2025-03-11 14:37:24,760 - MY_APP - Generated response from OpenAI: Japanese: 明日、友達に会う。  
+English: I will meet my friend tomorrow.
+2025-03-11 14:40:05,239 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:40:05,240 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:40:05,240 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:40:05,273 - MY_APP - API Response status: 200
+2025-03-11 14:40:05,273 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:40:05,274 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:40:05,274 - MY_APP - Running app...
+2025-03-11 14:40:05,276 - MY_APP - Current app state: AppState.SETUP
+2025-03-11 14:40:05,276 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:40:05,277 - MY_APP - Entering render_setup_state
+2025-03-11 14:40:05,278 - MY_APP - Loaded vocabulary with 60 words
+2025-03-11 14:40:05,280 - MY_APP - Continue to Practice clicked
+2025-03-11 14:40:05,338 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:40:05,338 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:40:05,339 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:40:05,377 - MY_APP - API Response status: 200
+2025-03-11 14:40:05,378 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:40:05,380 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:40:05,381 - MY_APP - Running app...
+2025-03-11 14:40:05,385 - MY_APP - Current app state: AppState.PRACTICE
+2025-03-11 14:40:05,386 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:42:29,376 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:42:29,377 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:42:29,377 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:42:29,405 - MY_APP - API Response status: 200
+2025-03-11 14:42:29,405 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:42:29,406 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:42:29,407 - MY_APP - Running app...
+2025-03-11 14:42:29,409 - MY_APP - Current app state: AppState.PRACTICE
+2025-03-11 14:42:29,411 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:42:31,351 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:42:31,351 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:42:31,352 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:42:31,374 - MY_APP - API Response status: 200
+2025-03-11 14:42:31,374 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:42:31,375 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:42:31,376 - MY_APP - Running app...
+2025-03-11 14:42:31,377 - MY_APP - Current app state: AppState.PRACTICE
+2025-03-11 14:42:31,377 - MY_APP - Vocabulary loaded: True
+2025-03-11 14:42:31,424 - MY_APP - Initializing Japanese Learning App...
+2025-03-11 14:42:31,425 - MY_APP - Attempting to load vocabulary with group_id: 1
+2025-03-11 14:42:31,425 - MY_APP - Making API request to: http://localhost:5000/groups/1/words/raw
+2025-03-11 14:42:31,454 - MY_APP - API Response status: 200
+2025-03-11 14:42:31,455 - MY_APP - API Response content: {
+  "items": [
+    {
+      "correct_count": 0,
+      "english": "to give",
+      "japanese": "\u3042\u3052\u308b",
+      "romaji": "ageru",
+      "wrong_count": 0
+    },
+    {
+      "correct_count": 0...
+2025-03-11 14:42:31,456 - MY_APP - Successfully parsed JSON. Items count: 60
+2025-03-11 14:42:31,462 - MY_APP - Running app...
+2025-03-11 14:42:31,463 - MY_APP - Current app state: AppState.REVIEW
+2025-03-11 14:42:31,464 - MY_APP - Vocabulary loaded: True

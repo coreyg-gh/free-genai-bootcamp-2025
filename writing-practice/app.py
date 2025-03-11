@@ -8,6 +8,12 @@ import logging
 import random
 import os
 
+# Configuration
+API_HOST = os.getenv('API_HOST', 'localhost')
+API_PORT = os.getenv('API_PORT', '5000')  # This is for your backend API
+STREAMLIT_PORT = 8081  # This matches your .streamlit/config.toml
+API_BASE_URL = f'http://{API_HOST}:{API_PORT}'
+
 # Setup Custom Logging -----------------------
 # Create a custom logger for your app only
 logger = logging.getLogger('my_app')
@@ -66,7 +72,7 @@ class JapaneseLearningApp:
             logger.debug(f"Attempting to load vocabulary with group_id: {group_id}")
             
             # Make API request with correct endpoint
-            url = f'http://localhost:5000/groups/{group_id}/words/raw'
+            url = f'{API_BASE_URL}/groups/{group_id}/words/raw'
             logger.debug(f"Making API request to: {url}")
             
             response = requests.get(url)
@@ -153,15 +159,21 @@ class JapaneseLearningApp:
                 
                 if sentence:
                     st.session_state.current_sentence = sentence
-                    if st.button("Continue to Practice"):
-                        st.session_state.app_state = AppState.PRACTICE
-                        st.experimental_rerun()
+                    st.write("Generated sentence:")
+                    st.write(sentence)
+            
+            # Only show Continue button if we have a current sentence
+            if st.session_state.current_sentence:
+                if st.button("Continue to Practice", key="continue_btn"):
+                    logger.debug("Continue to Practice clicked")
+                    st.session_state.app_state = AppState.PRACTICE
+                    st.rerun()  # Changed from experimental_rerun
         else:
             logger.warning("No vocabulary loaded")
             st.error("No vocabulary loaded. Please check your connection to the API.")
             if st.button("Retry Loading"):
                 self.load_vocabulary()
-                st.experimental_rerun()
+                st.rerun()  # Changed from experimental_rerun
 
     def render_practice_state(self):
         """Render the practice state UI"""
@@ -173,7 +185,7 @@ class JapaneseLearningApp:
         if st.button("Submit for Review") and uploaded_file:
             st.session_state.review_data = self.grade_submission(uploaded_file)
             st.session_state.app_state = AppState.REVIEW
-            st.experimental_rerun()
+            st.rerun()  # Changed from experimental_rerun
 
     def render_review_state(self):
         """Render the review state UI"""
@@ -191,7 +203,7 @@ class JapaneseLearningApp:
             st.session_state.app_state = AppState.SETUP
             st.session_state.current_sentence = ""
             st.session_state.review_data = None
-            st.experimental_rerun()
+            st.rerun()  # Changed from experimental_rerun
 
     def run(self):
         """Main method to run the app"""
