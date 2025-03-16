@@ -1,0 +1,9 @@
+opea-comps
+fastapi<0.116.0
+aiofiles<24.0,>=22.0
+protobuf>=5.26.1
+opentelemetry-semantic-conventions==0.50b0
+opentelemetry-instrumentation==0.50b0
+opentelemetry-instrumentation-asgi==0.50b0
+opentelemetry-instrumentation-fastapi==0.50b0
+grpcio-status==1.70.0
