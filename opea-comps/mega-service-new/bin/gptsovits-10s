@@ -3,12 +3,12 @@
 curl -X POST "http://127.0.0.1:9880" \
 -H "Content-Type: application/json" \
 -d @- \
---output output-10s.wav << 'EOF'
+--output output-NL-short-sample.wav << 'EOF'
 {
-    "refer_wav_path": "/audio/andrew-ref-10s.wav",
-    "prompt_text": "Because there's so much snow outside, I think I won't go to the office today and what I'll do instead is stay indoors and make myself some hamburgers and pizza. Does anyone like that idea?",
+    "refer_wav_path": "/audio/input-NL-short-sample.wav",
+    "prompt_text": "Newfoundland—a land of rugged beauty and heartfelt charm. Begin your journey in St. John’s, the colorful and historic capital, where jellybean row houses and Signal Hill tell stories of the past. Venture to Cape Spear, the easternmost point in North America, and witness the sun rising over the Atlantic.",
     "prompt_language": "en",
-    "text": "This is a new sentence I want to convert to speech",
+    "text": "This is a new sentence using my cloned voice, do you think it is any good?  It is a nice sunny day outside in Newfoundland.",
     "text_language": "en"
 }
 EOF

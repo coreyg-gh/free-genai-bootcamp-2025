@@ -1,0 +1,122 @@
+# OPEA Components Project Rules
+
+## Project Context
+- Enterprise AI platform components using OPEA framework
+- Voice cloning service using GPT-SoVITS
+- Microservices architecture with REST APIs
+
+## Code Style and Structure
+- Write concise Python code with type hints
+- Use functional programming patterns where possible
+- Follow PEP 8 style guidelines
+- Structure repository files as follows:
+```
+mega-service/
+├── app/
+    ├── api/         # API endpoints
+    ├── core/        # Core business logic
+    ├── models/      # Data models
+    ├── services/    # External service integrations
+    └── utils/       # Helper functions
+├── bin/            # Scripts and utilities
+├── tests/          # Test files
+└── docs/           # Documentation
+```
+
+## Tech Stack
+- Python 3.9+
+- FastAPI
+- GPT-SoVITS
+- OPEA GenAIComps
+- Docker/Kubernetes
+
+## Naming Conventions
+- Use snake_case for Python files and functions
+- Use PascalCase for classes
+- Use UPPERCASE for constants
+- Prefix private functions/variables with underscore
+- Use descriptive names that indicate purpose
+
+## Python Usage
+- Use type hints for all function parameters and returns
+- Use dataclasses or Pydantic models for data structures
+- Use async/await for I/O operations
+- Handle exceptions explicitly with proper error messages
+- Use absolute imports
+- Document public functions with docstrings
+
+## API Design
+- Follow RESTful principles
+- Use standard HTTP methods appropriately
+- Version all APIs (e.g., /v1/endpoint)
+- Return consistent error responses:
+  ```python
+  {
+    "error": str,
+    "detail": str,
+    "status_code": int
+  }
+  ```
+
+## Error Handling
+- Use custom exception classes
+- Log errors with appropriate severity levels
+- Include stack traces in development
+- Return user-friendly error messages in production
+- Handle timeouts and service unavailability
+
+## Testing
+- Write unit tests for core functionality
+- Use pytest as testing framework
+- Mock external service calls
+- Test error scenarios
+- Include performance tests for critical paths
+
+## Security
+- Validate all input data
+- Sanitize file paths
+- Use environment variables for secrets
+- Implement rate limiting
+- Follow OWASP security guidelines
+
+## Documentation
+- Maintain clear README with setup instructions
+- Document API endpoints with OpenAPI/Swagger
+- Include example requests/responses
+- Document environment variables
+- Keep architecture diagrams updated
+
+## Git Usage
+Commit Message Format:
+- feat: new feature
+- fix: bug fix
+- docs: documentation changes
+- refactor: code refactoring
+- test: adding tests
+- chore: maintenance
+
+Rules:
+- Write descriptive commit messages
+- Keep commits focused and atomic
+- Reference issue numbers when applicable
+- Use feature branches for development
+
+## Development Workflow
+- Use virtual environments
+- Keep dependencies updated
+- Run tests before commits
+- Follow semantic versioning
+- Document breaking changes
+
+# Additional pattern preferences
+– Always prefer simple solutions  
+– Avoid duplication of code whenever possible, which means checking for other areas of the codebase that might already have similar code and functionality  
+– Write code that takes into account the different environments: dev, test, and prod  
+– You are careful to only make changes that are requested or you are confident are well understood and related to the change being requested  
+– When fixing an issue or bug, do not introduce a new pattern or technology without first exhausting all options for the existing implementation. And if you finally do this, make sure to remove the old implementation afterwards so we don’t have duplicate logic.  
+– Keep the codebase very clean and organized  
+– Avoid writing scripts in files if possible, especially if the script is likely only to be run once  
+– Avoid having files over 200–300 lines of code. Refactor at that point.  
+– Mocking data is only needed for tests, never mock data for dev or prod  
+– Never add stubbing or fake data patterns to code that affects the dev or prod environments  
+– Never overwrite my .env file without first asking and confirming
