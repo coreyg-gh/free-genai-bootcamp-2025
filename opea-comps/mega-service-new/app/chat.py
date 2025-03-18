@@ -43,6 +43,7 @@ class Chat:
             service_type="LLM",
         )
         self.megaservice.add(llm)
+        logger.info(f"Added LLM service at http://0.0.0.0:9000/v1/chat/completions")
         
     async def handle_request(self, request: Request) -> ChatCompletionResponse:
         """
@@ -62,8 +63,10 @@ class Chat:
             chat_request = ChatCompletionRequest.model_validate(data)
             
             stream_opt = data.get("stream", False)
+            model = data.get("model", "llama3.2:1b")  # Default model if not specified
             
             parameters = LLMParams(
+                model=model,  # Add model parameter here
                 max_tokens=chat_request.max_tokens or 1024,
                 top_k=chat_request.top_k or 10,
                 top_p=chat_request.top_p or 0.95,
@@ -74,14 +77,40 @@ class Chat:
             
             initial_inputs = {
                 "messages": chat_request.messages,
+                "model": model,  # Add model to initial inputs
             }
             
+            logger.debug(f"Sending request to LLM service with parameters: {parameters}")
             result_dict, runtime_graph = await self.megaservice.schedule(
                 initial_inputs=initial_inputs,
                 llm_parameters=parameters
             )
+            logger.debug(f"Received result: {result_dict}")
             
-            response = "This is a test response"  # TODO: Implement actual response processing
+            # Get the last node from the runtime graph
+            last_node = runtime_graph.all_leaves()[-1]
+            
+            # Extract the actual response from the result
+            if last_node in result_dict:
+                service_result = result_dict[last_node]
+                
+                # Handle different response formats
+                if isinstance(service_result, dict):
+                    if 'choices' in service_result and len(service_result['choices']) > 0:
+                        response = service_result['choices'][0].get('message', {}).get('content', '')
+                    elif 'error' in service_result:
+                        error = service_result['error']
+                        error_msg = error.get('message', 'Unknown error')
+                        raise HTTPException(status_code=500, detail=error_msg)
+                    else:
+                        response = service_result.get('content', str(service_result))
+                else:
+                    response = str(service_result)
+            else:
+                logger.error(f"No result found for node {last_node}")
+                raise HTTPException(status_code=500, detail="No response received from LLM service")
+            
+            logger.debug(f"Processed response: {response}")
             
             choices = [
                 ChatCompletionResponseChoice(
@@ -98,7 +127,7 @@ class Chat:
             )
             
             return ChatCompletionResponse(
-                model=chat_request.model,
+                model=model,  # Use the model name in the response
                 choices=choices,
                 usage=usage
             )
@@ -110,6 +139,7 @@ class Chat:
     def start(self) -> None:
         """Start the FastAPI server with configured routes."""
         self.app.post(self.endpoint)(self.handle_request)
+        logger.info(f"Starting server on {self.host}:{self.port}")
         uvicorn.run(
             self.app,
             host=self.host,
@@ -121,3 +151,4 @@ if __name__ == '__main__':
     chat = Chat()
     chat.add_remote_services()
     chat.start()
+
