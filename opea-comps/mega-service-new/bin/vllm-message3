@@ -1,0 +1,16 @@
+#! /usr/bin/bash
+
+curl -X POST http://localhost:8889/v1/chat/completions \
+-H "Content-Type: application/json" \
+-d '{
+    "model": "llama3.2:1b",
+    "messages": [
+        { "role": "system", "content": "You are a helpful assistant." },
+        { "role": "user", "content": "Can you give me a travel itinerary for a summer trip to Newfoundland.  There will be 2 adults and it should not include activities that are aimed at children." }
+    ],
+    "temperature": 0.7,
+    "max_tokens": 150,
+    "top_p": 1.0,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0
+}'

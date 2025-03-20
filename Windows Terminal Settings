@@ -1,0 +1,10 @@
+{
+    "profiles": {
+        "defaults": {
+            "font": {
+                "face": "Noto Sans JP",
+                "size": 12
+            }
+        }
+    }
+}
