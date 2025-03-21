@@ -1,76 +1,67 @@
 import streamlit as st
 import json
 import requests
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from duckduckgo_search import DDGS
 from html2text import HTML2Text
 import time
 import re
+from collections import Counter
+import pandas as pd
+
+# At the top of the file, after other imports
+if 'search_results' not in st.session_state:
+    st.session_state.search_results = []
+if 'analysis_results' not in st.session_state:
+    st.session_state.analysis_results = {}
+if 'analysis_data' not in st.session_state:
+    st.session_state.analysis_data = {}
 
 class LanguageAgent:
     def __init__(self, host: str = "localhost", port: int = 9000):
-        self.ollama_url = f"http://{host}:{port}/api/chat"  # Changed back to /api/chat
+        """Initialize the Language Agent with Ollama configuration"""
+        self.ollama_url = f"http://{host}:{port}/api/chat"
         self.headers = {'Content-Type': 'application/json'}
-        # self.model = "deepseek-r1"
-        self.model = "llama3.2:1b"
-        
-    def search_web(self, query: str) -> List[Dict]:
-        """Search the web for information."""
-        results = DDGS().text(query, max_results=10)
-        if results:
-            return [
-                {
-                    "title": result["title"],
-                    "url": result["href"],
-                }
-                for result in results
-            ]
-        return []
+        # self.model = "llama3.2:1b"
+        # self.model = "mistral:7b"
+        self.model = "mistral:7b-instruct-v0.2-q4_K_M"
+        # test a model rated by some to be better for translation
+        #self.model = "7shi/llama-translate:8b-q4_K_M"
 
-    def get_page_content(self, url: str) -> str:
-        """Get the content of a web page."""
-        try:
-            # Add headers to make request look more like a browser
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-            }
-            
-            response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
-            
-            h = HTML2Text()
-            h.ignore_links = False
-            content = h.handle(response.text)
-            return content[:4000] if len(content) > 4000 else content
-        
-        except requests.exceptions.RequestException as e:
-            print(f"\nError accessing URL {url}: {str(e)}")
-            print("Skipping this result and continuing with the next one...")
-            return ""
+        # Common translations dictionary for fallback
+        self.common_translations = {
+            "the": "その",
+            "that": "それ",
+            "and": "そして",
+            "you": "あなた",
+            "about": "について",
+            "when": "いつ",
+            "for": "ために",
+            "think": "考える",
+            "his": "彼の"
+        }
 
-    def extract_vocabulary(self, text: str) -> List[str]:
-        """Extract vocabulary from text."""
-        words = set(text.lower().split())
-        vocabulary = [word for word in words if word.isalpha()]
-        return sorted(vocabulary)
-
-    def translate_words(self, words: List[str], target_language: str) -> List[Dict[str, str]]:
-        """Translate a list of words to the target language."""
-        translated_pairs = []
-        batch_size = 5  # Process 5 words at a time
-        
-        # Define language-specific formatting rules
-        language_formats = {
+        # Language-specific formatting rules
+        self.language_formats = {
             "Japanese": """
-                Rules for Japanese:
-                1. Use kanji with common readings
+                Japanese Translation Rules:
+                1. Use ONLY kanji with common readings
                 2. NO romaji or English characters
                 3. NO numbers or special characters
-                4. Example format:
-                   book: 本
-                   study: 勉強
-                   read: 読む
+                4. Examples of required format:
+                   sundown: 日暮れ
+                   the: その
+                   that: それ
+                   and: そして
+                   you: あなた
+                   about: について
+                   when: いつ
+                   for: ために
+                   think: 考える
+                   his: 彼の
+                   sunrise: 日の出
+                   sunset: 日没
+                   moonlight: 月光
             """,
             "Chinese": """
                 Rules for Chinese:
@@ -118,98 +109,124 @@ class LanguageAgent:
                    read: leggere
             """
         }
+    
+    def get_page_content(self, url: str) -> Optional[str]:
+        """Get content from a webpage."""
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            
+            h = HTML2Text()
+            h.ignore_links = True
+            return h.handle(response.text)
+        except Exception as e:
+            print(f"Error fetching page content: {str(e)}")
+            return None
+
+    def extract_vocabulary(self, text: str) -> List[str]:
+        """Extract unique words from text."""
+        try:
+            # Remove special characters and split into words
+            words = re.findall(r'\b\w+\b', text.lower())
+            # Filter out numbers and short words
+            return list(set(word for word in words if len(word) > 2 and not word.isdigit()))
+        except Exception as e:
+            print(f"Error extracting vocabulary: {str(e)}")
+            return []
+
+    def translate_words(self, words: List[str], target_language: str) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+        """
+        Translate a list of words to the target language using batch processing.
+        Returns a tuple of (successful translations, failed translations)
+        """
+        translated_pairs = []
+        batch_size = 5  # Reduce batch size for better quality
         
-        # Get language-specific format or use default
-        language_specific_format = language_formats.get(target_language, "")
+        # Get language-specific formatting rules
+        language_rules = self.language_formats.get(target_language, "")
         
         for i in range(0, len(words), batch_size):
             batch = words[i:i + batch_size]
             
-            # Create a more strict and clear prompt
-            if target_language == "Japanese":
-                messages = [
-                    {
-                        "role": "system",
-                        "content": (
-                            "You are a Japanese translator. Translate each English word to Japanese.\n"
-                            "STRICT RULES:\n"
-                            "1. Use ONLY this format: english: 日本語\n"
-                            "2. One word per line\n"
-                            "3. Always provide a translation\n"
-                            "4. Use common, basic translations\n"
-                            "5. NO parentheses or explanations\n"
-                            "Example correct format:\n"
-                            "hello: こんにちは\n"
-                            "world: 世界\n"
-                            "book: 本\n"
-                            "a: ひとつの\n"
-                            "the: その\n"
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": (
-                            "Translate these words to Japanese:\n" +
-                            "\n".join(batch)
-                        )
-                    }
-                ]
-            else:
-                messages = [
-                    {
-                        "role": "system",
-                        "content": (
+            messages = [
+                {
+                    "role": "system",
+                    "content": (
                             f"You are a professional {target_language} translator.\n"
-                            "RULES:\n"
-                            "1. ONLY use format 'word: translation'\n"
-                            "2. One translation per line\n"
-                            "3. NO explanations or notes\n"
-                            "4. NO English unless it's the same word in target language\n"
-                            f"{language_specific_format}\n"
-                        )
-                    },
-                    {
-                        "role": "user",
-                        "content": "\n".join(batch)
-                    }
-                ]
-            
+                            "STRICT FORMAT RULES:\n"
+                            "1. MUST use format 'english_word: translation'\n"
+                            "2. English word MUST be on the left side of the colon\n"
+                            "3. Translation MUST be on the right side of the colon\n"
+                            "4. One translation per line\n"
+                            "5. NEVER include explanations or notes, only respond with the 2 words\n"
+                            "6. NO English unless it's the same word in target language\n"
+                            "7. ALWAYS provide a translation for every word\n"
+                            f"{language_rules}\n"  # Changed from language_specific_format to language_rules
+                            "Example correct format:\n"
+                            "book: 本\n"
+                            "study: 勉強\n"
+                            "read: 読む\n"
+                            "\nNEVER use format 'translation: english_word'\n"
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        f"Translate these words to {target_language}. YOU MUST USE THE FORMAT 'word: translation' FOR EVERY WORD:\n" + 
+                        "\n".join(batch)
+                    )
+                }
+            ]
+
             try:
-                print(f"\nTranslating batch: {batch}")
-                translation_result = self._try_translation(batch, messages, target_language)
+                print(f"\nSending batch: {batch}")
+                response = requests.post(
+                    self.ollama_url,
+                    headers=self.headers,
+                    json={
+                        "model": self.model,
+                        "messages": messages,
+                        "stream": False,
+                        "temperature": 0.3  # Slightly increase temperature for better handling of informal words
+                    }
+                )
+                response.raise_for_status()
+                response_data = response.json()
                 
-                # If any translations failed, try one more time
-                failed_words = [pair["original"] for pair in translation_result 
-                              if pair["translation"].startswith("[")]
+                translation_text = response_data["message"]["content"]
+                print(f"\nReceived response:\n{translation_text}")
                 
-                if failed_words:
-                    print(f"\nRetrying failed words: {failed_words}")
-                    retry_messages = [
-                        {
-                            "role": "system",
-                            "content": (
-                                f"Translate these specific words to {target_language} only.\n"
-                                "Format: word: translation\n"
-                                f"{language_specific_format}\n"
-                            )
-                        },
-                        {
-                            "role": "user",
-                            "content": "\n".join(failed_words)
-                        }
-                    ]
-                    
-                    retry_results = self._try_translation(failed_words, retry_messages, target_language)
-                    
-                    # Update original results with successful retries
-                    for retry_pair in retry_results:
-                        if not retry_pair["translation"].startswith("["):
-                            for pair in translation_result:
-                                if pair["original"] == retry_pair["original"]:
-                                    pair["translation"] = retry_pair["translation"]
-                                    break
+                translations_dict = {}
+                for line in translation_text.split('\n'):
+                    line = line.strip()
+                    if ':' in line:
+                        parts = line.split(':', 1)
+                        word = parts[0].strip().lower()
+                        translation = parts[1].strip()
+                        translations_dict[word] = translation
+
+                # Process batch results
+                batch_results = []
+                for word in batch:
+                    word_lower = word.lower()
+                    if word_lower in translations_dict and translations_dict[word_lower]:
+                        batch_results.append({
+                            "original": word,
+                            "translation": translations_dict[word_lower]
+                        })
+                    elif word_lower in self.common_translations:  # Use class's common translations
+                        batch_results.append({
+                            "original": word,
+                            "translation": self.common_translations[word_lower]
+                        })
+                    else:
+                        batch_results.append({
+                            "original": word,
+                            "translation": "[Missing translation]"
+                        })
                 
-                translated_pairs.extend(translation_result)
+                translated_pairs.extend(batch_results)
+                time.sleep(0.5)  # Rate limiting
                 
             except Exception as e:
                 print(f"Translation batch failed: {str(e)}")
@@ -218,109 +235,120 @@ class LanguageAgent:
                         "original": word,
                         "translation": f"[Translation failed: {str(e)}]"
                     })
-        
-        time.sleep(0.5)  # Small delay between batches
-        
+
         # Separate successful and failed translations
         successful = [pair for pair in translated_pairs 
                      if not pair["translation"].startswith("[")]
         failed = [{"word": pair["original"], 
-                   "reason": pair["translation"][1:-1]}  # Remove brackets
+                   "reason": pair["translation"][1:-1]}
                   for pair in translated_pairs 
                   if pair["translation"].startswith("[")]
-        
+
         return successful, failed
 
     def _try_translation(self, words: List[str], messages: List[Dict[str, str]], target_language: str) -> List[Dict[str, str]]:
-        """Helper method to attempt translation with detailed debugging."""
-        result = []
-        
+        """Helper method to attempt translation with validation."""
         try:
-            payload = {
-                "model": self.model,
-                "messages": messages,
-                "stream": False,
-                "temperature": 0.1  # Reduced temperature for more consistent output
-            }
+            response_data = self.chat_completion(messages)
+            if not response_data:
+                return [{"original": word, "translation": "[No response]"} for word in words]
             
-            response = requests.post(self.ollama_url, json=payload, headers=self.headers, timeout=30)
-            response.raise_for_status()
+            translations_dict = {}
             
-            response_data = response.json()
-            
-            if 'message' in response_data:
-                translation_text = response_data['message']['content'].strip()
-                print(f"Raw translation response:\n{translation_text}")
+            # First pass: exact matches
+            for line in response_data.split('\n'):
+                line = line.strip()
+                if not line or ':' not in line:
+                    continue
                 
-                # Split into lines and clean up
-                lines = [line.strip() for line in translation_text.split('\n') 
-                        if line.strip() and ':' in line]
+                parts = line.split(':', 1)
+                if len(parts) != 2:
+                    continue
                 
-                # Create a dictionary of translations
-                translations_dict = {}
-                for line in lines:
-                    # Skip lines that don't match our expected format
-                    if not re.match(r'^[a-zA-Z]+:', line):
+                word = parts[0].strip().lower()
+                translation = parts[1].strip()
+                
+                # Basic cleaning
+                translation = re.sub(r'[,.!?]$', '', translation)
+                translation = translation.strip()
+                
+                # Language-specific validation
+                if target_language == "Japanese":
+                    if not self._validate_japanese(translation):
                         continue
-                        
-                    parts = line.split(':', 1)
-                    if len(parts) != 2:
+                elif target_language == "Chinese":
+                    if not self._validate_chinese(translation):
                         continue
-                        
-                    key = parts[0].strip().lower()
-                    value = parts[1].strip()
-                    
-                    # For Japanese, validate characters
-                    if target_language == "Japanese":
-                        value = ''.join(char for char in value 
-                                      if ('\u3040' <= char <= '\u309f' or  # Hiragana
-                                          '\u30a0' <= char <= '\u30ff' or  # Katakana
-                                          '\u4e00' <= char <= '\u9fff'))   # Kanji
-                        
-                        # Skip empty or invalid translations
-                        if not value or len(value) < 1:
-                            continue
-                            
-                        # Skip if it looks like romaji or contains numbers
-                        if re.search(r'[a-zA-Z0-9]', value):
-                            continue
-                    
-                    translations_dict[key] = value
                 
-                # Process each word
-                for word in words:
-                    word_lower = word.lower()
-                    
-                    if word_lower in translations_dict:
-                        result.append({
-                            "original": word,
-                            "translation": translations_dict[word_lower]
-                        })
-                        print(f"Found translation for '{word}': '{translations_dict[word_lower]}'")
-                    else:
-                        print(f"No translation found for '{word}'")
-                        result.append({
-                            "original": word,
-                            "translation": "[Missing translation]"
-                        })
+                translations_dict[word] = translation
             
-            else:
-                print("No message in response data")
-                for word in words:
+            # Second pass: fuzzy matches
+            for word in words:
+                word_lower = word.lower()
+                if word_lower not in translations_dict:
+                    # Look for the word as part of other translations
+                    for line in response_data.split('\n'):
+                        if word_lower in line.lower():
+                            parts = line.split(':', 1)
+                            if len(parts) == 2:
+                                translation = parts[1].strip()
+                                translation = re.sub(r'[,.!?]$', '', translation)
+                                if self._validate_translation(translation, target_language):
+                                    translations_dict[word_lower] = translation
+                                    break
+            
+            # Process results
+            result = []
+            for word in words:
+                word_lower = word.lower()
+                if word_lower in translations_dict:
                     result.append({
                         "original": word,
-                        "translation": "[No response]"
+                        "translation": translations_dict[word_lower]
                     })
-        
+                else:
+                    result.append({
+                        "original": word,
+                        "translation": "[Missing translation]"
+                    })
+            
+            return result
+            
         except Exception as e:
             print(f"Translation request failed: {str(e)}")
-            for word in words:
-                result.append({
-                    "original": word,
-                    "translation": "[Request failed]"
-                })
-        
-        return result
+            return [{"original": word, "translation": "[Request failed]"} for word in words]
+
+    def _validate_translation(self, translation: str, target_language: str) -> bool:
+        """Validate translation based on target language."""
+        if target_language == "Japanese":
+            return self._validate_japanese(translation)
+        elif target_language == "Chinese":
+            return self._validate_chinese(translation)
+        return bool(translation and not translation.isdigit())
+
+    def _validate_japanese(self, text: str) -> bool:
+        """Validate Japanese text."""
+        # Check for Japanese characters
+        has_japanese = any(
+            '\u3040' <= char <= '\u309f' or  # Hiragana
+            '\u30a0' <= char <= '\u30ff' or  # Katakana
+            '\u4e00' <= char <= '\u9fff'     # Kanji
+            for char in text
+        )
+        # No Latin characters or numbers
+        no_latin = not re.search(r'[a-zA-Z0-9]', text)
+        return has_japanese and no_latin
+
+    def _validate_chinese(self, text: str) -> bool:
+        """Validate Chinese text."""
+        # Check for Chinese characters
+        has_chinese = any(
+            '\u4e00' <= char <= '\u9fff'     # Chinese characters
+            for char in text
+        )
+        # No Latin characters or numbers
+        no_latin = not re.search(r'[a-zA-Z0-9]', text)
+        return has_chinese and no_latin
 
     def chat_completion(self, messages: List[Dict[str, str]]) -> Optional[str]:
         """Improved chat completion with better error handling and debugging"""
@@ -349,6 +377,23 @@ class LanguageAgent:
             print(f"Error in chat completion: {str(e)}")
             return None
 
+    def search_web(self, query: str) -> List[Dict[str, str]]:
+        """Search the web using DuckDuckGo."""
+        try:
+            with DDGS() as ddgs:
+                results = list(ddgs.text(query, max_results=5))
+                return [
+                    {
+                        "title": result["title"],
+                        "url": result["href"],  # Changed from "link" to "href"
+                        "snippet": result["body"]
+                    }
+                    for result in results
+                ]
+        except Exception as e:
+            print(f"Search error: {str(e)}")
+            return []
+
 def main():
     st.set_page_config(
         page_title="Language Learning Song Assistant",
@@ -356,11 +401,20 @@ def main():
         layout="wide"
     )
 
+    print("Starting main function")  # Debug print
+
+    # Initialize session state
+    if 'analysis_data' not in st.session_state:
+        st.session_state.analysis_data = {}
+    if 'translations' not in st.session_state:
+        st.session_state.translations = {}
+
     st.title("🎵 Language Learning Song Assistant")
     st.markdown("---")
 
     # Initialize the agent
     agent = LanguageAgent()
+    print("Agent initialized")  # Debug print
 
     # Sidebar for language selection
     with st.sidebar:
@@ -383,66 +437,198 @@ def main():
 
     if song_title:
         with st.spinner(f"Searching for information about: {song_title}"):
-            search_results = agent.search_web(f"{song_title} song information lyrics meaning")
-
+            search_results = agent.search_web(f"{song_title} song information lyrics")
+            #search_results = agent.search_web(f"{song_title} song information lyrics meaning")
         if search_results:
             st.subheader("Found relevant information")
             
+            # Initialize a flag in session state if not present
+            if 'show_translation_buttons' not in st.session_state:
+                st.session_state.show_translation_buttons = False
+
+            # Show results and analysis buttons
             for i, result in enumerate(search_results[:3], 1):
                 with st.expander(f"Result {i}: {result['title']}", expanded=True):
-                    st.write(f"Source: {result['url']}")
+                    col1, col2 = st.columns([3, 1])
                     
-                    if st.button(f"Analyze Result {i}", key=f"analyze_{i}"):
-                        with st.spinner("Fetching and analyzing content..."):
-                            content = agent.get_page_content(result['url'])
-                            
-                            if not content:
-                                st.error("Could not retrieve content from this source.")
-                            else:
-                                vocabulary = agent.extract_vocabulary(content)
-                                if not vocabulary:
-                                    st.warning("No processable text found in this content.")
-                                else:
-                                    st.success(f"Found {len(vocabulary)} unique words!")
-                                    
-                                    # Create two columns for vocabulary display
-                                    col1, col2 = st.columns(2)
-                                    
-                                    with col1:
-                                        st.subheader("Sample Vocabulary")
-                                        sample_words = sorted(vocabulary)[:10]
+                    with col1:
+                        st.write(f"Source: {result['url']}")
+                        
+                        # Analyze button in the left column
+                        if st.button(f"Analyze Result {i}", key=f"analyze_{i}"):
+                            print(f"Analyze button clicked for result {i}")
+                            with st.spinner("Fetching and analyzing content..."):
+                                try:
+                                    content = agent.get_page_content(result['url'])
+                                    if content:
+                                        vocabulary = agent.extract_vocabulary(content)
+                                        word_counts = Counter(content.lower().split())
+                                        common_words = sorted(
+                                            [(word, word_counts[word]) for word in vocabulary if word in word_counts],
+                                            key=lambda x: x[1],
+                                            reverse=True
+                                        )[:10]
                                         
-                                        with st.spinner("Translating sample words..."):
-                                            successful_translations, failed_translations = agent.translate_words(sample_words, target_language)
+                                        # Store in session state
+                                        st.session_state.analysis_data[i] = {
+                                            'word_counts': dict(word_counts),
+                                            'common_words': common_words,
+                                            'all_words': vocabulary
+                                        }
+                                        st.success(f"Analysis complete! Found {len(vocabulary)} unique words.")
+                                except Exception as e:
+                                    st.error(f"Error analyzing content: {str(e)}")
+
+                        # After the try-except block, check for analysis data and show translation options
+                        if i in st.session_state.analysis_data:
+                            st.markdown("#### Translation Options")
+                            tcol1, tcol2 = st.columns(2)
+                            
+                            with tcol1:
+                                if st.button("Translate Common Words", key=f"translate_common_{i}", type="primary"):
+                                    with st.spinner("Translating common words..."):
+                                        words_to_translate = [word for word, _ in st.session_state.analysis_data[i]['common_words']]
+                                        translations, failed = agent.translate_words(words_to_translate, target_language)
+                                        
+                                        # Store translations in session state
+                                        if i not in st.session_state.translations:
+                                            st.session_state.translations[i] = {}
+                                        st.session_state.translations[i]['common'] = translations
+                                        
+                                        # Display successful translations
+                                        if translations:
+                                            st.markdown("##### Common Words Translations:")
+                                            # Add custom CSS for wider columns and table
+                                            st.markdown("""
+                                                <style>
+                                                .stDataFrame {
+                                                    width: 100%;
+                                                }
+                                                .stDataFrame td:nth-child(1) {
+                                                    min-width: 150px;
+                                                }
+                                                .stDataFrame td:nth-child(2) {
+                                                    min-width: 150px;
+                                                }
+                                                /* Make the table container wider */
+                                                [data-testid="stDataFrame"] > div:first-child {
+                                                    width: 100%;
+                                                    min-width: 400px;
+                                                }
+                                                </style>
+                                            """, unsafe_allow_html=True)
                                             
-                                            if successful_translations:
-                                                st.subheader("Successful Translations")
-                                                st.table({
-                                                    "Original": [pair["original"] for pair in successful_translations],
-                                                    f"{target_language}": [pair["translation"] for pair in successful_translations]
-                                                })
+                                            df_success = pd.DataFrame(
+                                                [(t['original'], t['translation']) for t in translations],
+                                                columns=['Original', 'Translation']
+                                            )
+                                            st.dataframe(
+                                                df_success,
+                                                column_config={
+                                                    "Original": st.column_config.TextColumn(width="medium"),
+                                                    "Translation": st.column_config.TextColumn(width="medium")
+                                                },
+                                                hide_index=True,
+                                                use_container_width=True,  # Make table use full container width
+                                                height=400
+                                            )
+                                        
+                                        # Display failed translations in a separate table
+                                        if failed:
+                                            st.markdown("##### Failed Translations:")
+                                            df_failed = pd.DataFrame(
+                                                [(f['word'], f['reason']) for f in failed],
+                                                columns=['Word', 'Failure Reason']
+                                            )
+                                            st.table(df_failed)
+                            
+                            with tcol2:
+                                if st.button("Translate All Words", key=f"translate_all_{i}", type="primary"):
+                                    with st.spinner("Translating all words..."):
+                                        words_to_translate = st.session_state.analysis_data[i]['all_words'][:100]  # Limit to first 100 words
+                                        translations, failed = agent.translate_words(words_to_translate, target_language)
+                                        
+                                        # Store translations in session state
+                                        if i not in st.session_state.translations:
+                                            st.session_state.translations[i] = {}
+                                        st.session_state.translations[i]['all'] = translations
+                                        
+                                        # Display successful translations
+                                        if translations:
+                                            st.markdown("##### All Words Translations:")
+                                            # Add custom CSS for wider columns and table
+                                            st.markdown("""
+                                                <style>
+                                                .stDataFrame {
+                                                    width: 100%;
+                                                }
+                                                .stDataFrame td:nth-child(1) {
+                                                    min-width: 150px;
+                                                }
+                                                .stDataFrame td:nth-child(2) {
+                                                    min-width: 150px;
+                                                }
+                                                /* Make the table container wider */
+                                                [data-testid="stDataFrame"] > div:first-child {
+                                                    width: 100%;
+                                                    min-width: 400px;
+                                                }
+                                                </style>
+                                            """, unsafe_allow_html=True)
                                             
-                                            if failed_translations:
-                                                st.subheader("Failed Translations")
-                                                st.table({
-                                                    "Word": [pair["word"] for pair in failed_translations],
-                                                    "Reason": [pair["reason"] for pair in failed_translations]
-                                                })
-                                                
-                                                st.warning(f"Failed to translate {len(failed_translations)} words. See details above.")
-                                            
-                                            if not successful_translations and not failed_translations:
-                                                st.error("Translation failed. Please check if Ollama is running and try again.")
-                                                st.code("Run Ollama with: ollama run llama2")
-                                    
-                                    with col2:
-                                        if st.button("Show All Vocabulary"):
-                                            with st.spinner("Translating all words..."):
-                                                translations, failed_translations = agent.translate_words(sorted(vocabulary), target_language)
-                                                st.table({
-                                                    "Original": [pair["original"] for pair in translations],
-                                                    f"{target_language}": [pair["translation"] for pair in translations]
-                                                })
+                                            df_success = pd.DataFrame(
+                                                [(t['original'], t['translation']) for t in translations],
+                                                columns=['Original', 'Translation']
+                                            )
+                                            st.dataframe(
+                                                df_success,
+                                                column_config={
+                                                    "Original": st.column_config.TextColumn(width="medium"),
+                                                    "Translation": st.column_config.TextColumn(width="medium")
+                                                },
+                                                hide_index=True,
+                                                use_container_width=True,  # Make table use full container width
+                                                height=600
+                                            )
+                                        
+                                        # Display failed translations in a separate table
+                                        if failed:
+                                            st.markdown("##### Failed Translations:")
+                                            df_failed = pd.DataFrame(
+                                                [(f['word'], f['reason']) for f in failed],
+                                                columns=['Word', 'Failure Reason']
+                                            )
+                                            st.table(df_failed)
+
+                        # If translations exist for this result, display them
+                        if i in st.session_state.translations:
+                            # Remove the display of previously translated words
+                            pass  # or you can remove this entire if block
+
+                    with col2:
+                        # Show Lyrics button
+                        if st.button(f"Show Lyrics", key=f"lyrics_{i}"):
+                            with st.spinner("Fetching lyrics..."):
+                                content = agent.get_page_content(result['url'])
+                                if content:
+                                    st.text_area("Raw Lyrics", value=content, height=300)
+                                else:
+                                    st.error("Could not fetch lyrics from this source.")
+
+            # Add translation buttons if we should show them
+            if st.session_state.show_translation_buttons:
+                st.markdown("---")
+                st.subheader("Translation Options")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("Translate Common Words", key="translate_common", type="primary"):
+                        st.write("Translation of common words will appear here")
+                
+                with col2:
+                    if st.button("Translate All Words", key="translate_all", type="primary"):
+                        st.write("Translation of all words will appear here")
         else:
             st.error("No results found for this song. Try another search.")
 
@@ -451,6 +637,21 @@ def main():
     st.markdown("Made with lots of help from AI!")
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
