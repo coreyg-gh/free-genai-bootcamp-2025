@@ -1,0 +1,83 @@
+{
+  "name": "Language Learning Hub",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "language-hub",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryBinary",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        -480
+      ],
+      "id": "1389ba4c-33e1-495e-aaab-9518a88d0c7b",
+      "name": "Language Hub",
+      "webhookId": "ac6e0bc8-a9a8-4f15-8947-d53af1080186"
+    },
+    {
+      "parameters": {
+        "jsCode": "// HTML content for the landing page\nconst html = `<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>AI-Powered Language Learning</title>\n    <style>\n        body {\n            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;\n            margin: 0;\n            padding: 0;\n            background-color: #f4f7f6;\n            color: #333;\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            min-height: 100vh;\n        }\n        .container {\n            background-color: #ffffff;\n            padding: 40px;\n            border-radius: 12px;\n            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);\n            text-align: center;\n            max-width: 800px;\n            width: 90%;\n        }\n        h1 {\n            color: #2c3e50;\n            margin-bottom: 30px;\n            font-size: 2.5em;\n        }\n        .options-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n            gap: 30px;\n            margin-top: 30px;\n        }\n        .option-card {\n            background-color: #f8f9fa;\n            padding: 30px;\n            border-radius: 8px;\n            border: 1px solid #e9ecef;\n            transition: transform 0.3s ease, box-shadow 0.3s ease;\n        }\n        .option-card:hover {\n            transform: translateY(-5px);\n            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);\n        }\n        .option-card h2 {\n            margin-top: 0;\n            color: #3498db;\n            font-size: 1.5em;\n            margin-bottom: 15px;\n        }\n        .option-card p {\n            color: #555;\n            font-size: 1em;\n            line-height: 1.6;\n            margin-bottom: 25px;\n        }\n        .option-card .icon {\n            font-size: 3em; /* Adjust icon size */\n            margin-bottom: 15px;\n            display: block;\n        }\n        .btn {\n            display: inline-block;\n            background-color: #3498db;\n            color: white;\n            padding: 12px 25px;\n            border: none;\n            border-radius: 5px;\n            text-decoration: none;\n            font-size: 1em;\n            font-weight: bold;\n            transition: background-color 0.3s ease;\n        }\n        .btn:hover {\n            background-color: #2980b9;\n        }\n        .btn-song { background-color: #2ecc71; }\n        .btn-song:hover { background-color: #27ae60; }\n        .btn-vocab { background-color: #e74c3c; }\n        .btn-vocab:hover { background-color: #c0392b; }\n\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h1>AI-Powered Language Learning</h1>\n        <p>Choose an activity to start learning!</p>\n\n        <div class=\"options-grid\">\n            <div class=\"option-card\">\n                <span class=\"icon\">🎵</span>\n                <h2>Song Learning App</h2>\n                <p>Learn vocabulary and phrases by analyzing the lyrics of your favorite songs.</p>\n                <a href=\"/webhook/song-learning\" class=\"btn btn-song\">Start Song Learning</a>\n            </div>\n\n            <div class=\"option-card\">\n                <span class=\"icon\">🖼️🧠</span>\n                <h2>Vocabulary Image Game</h2>\n                <p>Test your knowledge by guessing the word represented by an AI-generated image.</p>\n                <a href=\"/webhook/vocabulary-game\" class=\"btn btn-vocab\">Play Vocab Game</a>\n            </div>\n        </div>\n    </div>\n</body>\n</html>`;\n\n// Convert HTML to base64 for binary data\nconst base64Data = Buffer.from(html).toString('base64');\n\n// Return in binary format for the webhook\nreturn [{\n  binary: {\n    data: {\n      data: base64Data,\n      mimeType: 'text/html'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        -480
+      ],
+      "id": "e64f7074-2b30-4dc0-a051-16f129a73d1b",
+      "name": "Generate Hub Page HTML"
+    },
+    {
+      "parameters": {
+        "content": "## This is the main workflow that provides a menu interface to the apps.\n\nStart both workflows and access via URL: http://localhost:5678/webhook/language-hub\n\nDepends on local Docker container: mega-service-new",
+        "height": 280,
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -900,
+        -540
+      ],
+      "typeVersion": 1,
+      "id": "6be7ebf2-a165-4d80-bf50-72d6e251ff10",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Language Hub": {
+      "main": [
+        [
+          {
+            "node": "Generate Hub Page HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4bdca2d2-1d86-4d4b-8e69-02727edf678d",
+  "meta": {
+    "instanceId": "cfc8362129379adb654c81f91734970bc7f0bb80b1128b10179a36676c4109b3"
+  },
+  "id": "oSSIMpOLGTQ5GewA",
+  "tags": []
+}

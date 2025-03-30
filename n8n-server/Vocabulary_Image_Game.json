@@ -1,0 +1,334 @@
+{
+  "name": "Vocabulary Image Game",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "vocabulary-game",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryBinary",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        -300
+      ],
+      "id": "ef33b27e-8f8a-49ab-90d7-b28152bcef29",
+      "name": "Vocabulary-Game",
+      "webhookId": "acd8ea72-1055-4c53-9387-e4968165cb30"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mega-service-new-ollama-server-1:11434/api/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "=Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"llama3:8b\",\n  \"prompt\": \"Generate a single noun that is a common object or animal that most people would recognize. Ensure high variety; avoid repeating recent words. Respond with only the word.\",\n  \"stream\": false,\n  \"temperature\": 1.1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -40,
+        -100
+      ],
+      "id": "948e851b-debf-46af-a50a-e3238dc5281d",
+      "name": "Get Random Word from Ollama"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get Ollama response object from the input item\nconst ollamaResponse = $input.item.json;\n\n// Initialize word variable\nlet word = \"\";\n\n// Check if the 'response' field exists and is a string (for /api/generate)\nif (ollamaResponse && typeof ollamaResponse.response === 'string') {\n  // Extract the content from the 'response' field\n  word = ollamaResponse.response\n    .trim()                // Remove extra whitespace\n    .replace(/[\".]/g, '')  // Remove quotes and periods\n    .split(/\\s+/)[0];      // Take just the first word\n}\n\n// Fallback words (keep as before)\nconst fallbackWords = [\n  \"dog\", \"cat\", \"house\", \"tree\", \"book\",\n  \"chair\", \"apple\", \"car\", \"flower\", \"bird\"\n];\n\n// Check if we got a valid word\nif (!word || word.length < 3 || word.length > 15) {\n  const randomIndex = Math.floor(Math.random() * fallbackWords.length);\n  word = fallbackWords[randomIndex];\n  console.log(\"Ollama word unsuitable or missing (using /api/generate), using fallback:\", word);\n} else {\n  console.log(\"Using Ollama word (from /api/generate):\", word);\n}\n\n// Return the final word\nreturn {\n  json: {\n     word: word.toLowerCase()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        -100
+      ],
+      "id": "4b996852-6e3b-480f-bf89-3488fb776b3f",
+      "name": "Extract Random Word"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vocabulary-game-check",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        160
+      ],
+      "id": "d25c38cc-d865-4ad7-a579-affcb55d1a8a",
+      "name": "Word Check",
+      "webhookId": "dd48c22e-aff0-4a54-9532-e42550243f7d"
+    },
+    {
+      "parameters": {
+        "content": "## Image Game Nodes",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -860,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "710877b9-959c-4ae8-a665-8bce2e40643e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// HTML content for the main page with Back link\nconst html = `<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Vocabulary Image Game with AI</title>\n  <style>\n    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }\n    h1 { color: #333; }\n    .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }\n    .image-container { height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; margin: 20px 0; background-color: #f8f9fa; }\n    .image-container img { max-width: 100%; max-height: 280px; display: none; }\n    .controls { margin: 20px 0; }\n    button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }\n    button:hover { background-color: #45a049; }\n    button:disabled { background-color: #cccccc; cursor: not-allowed; }\n    select, input { padding: 8px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 1em; }\n    .feedback { margin-top: 20px; padding: 10px; border-radius: 4px; display: none; }\n    .correct { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }\n    .incorrect { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }\n    .loading { display: none; margin-left: 10px; font-style: italic; color: #555; }\n    .ai-powered { color: #666; font-size: 0.8em; margin-top: 4px; }\n    .back-link { /* Style for the back link */\n        display: block; \n        margin-bottom: 25px; /* Space above the title */\n        text-decoration: none;\n        color: #3498db;\n        font-size: 0.9em;\n    }\n    .back-link:hover {\n        text-decoration: underline;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\"> \n    <a href=\"/webhook/language-hub\" class=\"back-link\">← Back to Language Hub</a> \n    <h1>AI-Powered Vocabulary Image Game</h1>\n    \n    <div class=\"card\">\n      <h2>1. Generate a Random Image</h2>\n      <p>Click the button below to generate an image of a random object.</p>\n      <button id=\"generateBtn\">Generate Image</button>\n      <span class=\"loading\" id=\"generateLoading\">Generating image with AI...</span>\n      <p class=\"ai-powered\">Powered by Ollama for word generation and Pollinations.AI for image creation</p>\n      \n      <div class=\"image-container\">\n        <img id=\"generatedImage\" src=\"\" alt=\"Generated image will appear here\">\n        <div id=\"placeholder\">Image will appear here</div>\n      </div>\n    </div>\n    \n    <div class=\"card\">\n      <h2>2. Guess What's in the Image</h2>\n      <div class=\"controls\">\n        <label for=\"language\">Select your practice language:</label>\n        <select id=\"language\">\n          <option value=\"\">Choose a language...</option>\n          <option value=\"Spanish\">Spanish</option>\n          <option value=\"French\">French</option>\n          <option value=\"German\">German</option>\n          <option value=\"Italian\">Italian</option>\n          <option value=\"Japanese\">Japanese</option>\n          <option value=\"Chinese\">Chinese</option>\n        </select>\n      </div>\n      <div class=\"controls\">\n        <label for=\"wordGuess\">What do you think this is?</label>\n        <input type=\"text\" id=\"wordGuess\" placeholder=\"Enter your guess...\">\n        <button id=\"checkBtn\">Check Answer</button>\n        <span class=\"loading\" id=\"checkLoading\">Checking answer with AI...</span>\n      </div>\n      <div id=\"feedback\" class=\"feedback\"></div>\n      <p class=\"ai-powered\">Powered by Ollama for answer evaluation</p>\n    </div>\n  </div>\n  \n  <script>\n    // Store the correct word (hidden from user)\n    let correctWord = '';\n    \n    // Generate Image button\n    document.getElementById('generateBtn').addEventListener('click', async function() {\n      const generateBtn = document.getElementById('generateBtn');\n      generateBtn.disabled = true;\n      \n      // Show loading indicator\n      document.getElementById('generateLoading').style.display = 'inline';\n      document.getElementById('placeholder').style.display = 'block';\n      document.getElementById('generatedImage').style.display = 'none';\n      document.getElementById('feedback').style.display = 'none';\n      \n      try {\n        // Call our n8n generate endpoint\n        const response = await fetch('/webhook/vocabulary-game-generate', {\n          method: 'POST'\n        });\n        \n        if (!response.ok) {\n          throw new Error('API returned status ' + response.status);\n        }\n        \n        const data = await response.json();\n        \n        // Update the image and store the correct word\n        if (data.imageUrl && data.word) {\n          document.getElementById('generatedImage').src = data.imageUrl;\n          document.getElementById('generatedImage').style.display = 'block';\n          document.getElementById('placeholder').style.display = 'none';\n          correctWord = data.word;\n          console.log('Correct word (for testing):', correctWord);\n        } else {\n          throw new Error('Invalid response format');\n        }\n      } catch (error) {\n        console.error('Error:', error);\n        document.getElementById('placeholder').textContent = 'Error: ' + error.message + '. Please try again.';\n      } finally {\n        document.getElementById('generateLoading').style.display = 'none';\n        generateBtn.disabled = false;\n      }\n    });\n    \n    // Check Answer button\n    document.getElementById('checkBtn').addEventListener('click', async function() {\n      const language = document.getElementById('language').value;\n      const guess = document.getElementById('wordGuess').value.trim();\n      const checkBtn = document.getElementById('checkBtn');\n      \n      if (!correctWord) {\n        alert('Please generate an image first!');\n        return;\n      }\n      \n      if (!language) {\n        alert('Please select a language!');\n        return;\n      }\n      \n      if (!guess) {\n        alert('Please enter your guess!');\n        return;\n      }\n      \n      // Show loading indicator\n      document.getElementById('checkLoading').style.display = 'inline';\n      checkBtn.disabled = true;\n      \n      try {\n        // Call our n8n check endpoint\n        const response = await fetch('/webhook/vocabulary-game-check', {\n          method: 'POST',\n          headers: {\n            'Content-Type': 'application/json'\n          },\n          body: JSON.stringify({\n            correctWord: correctWord,\n            guess: guess,\n            language: language\n          })\n        });\n        \n        if (!response.ok) {\n          throw new Error('API returned status ' + response.status);\n        }\n        \n        const data = await response.json();\n        \n        // Display feedback\n        const feedbackEl = document.getElementById('feedback');\n        feedbackEl.innerHTML = data.feedback;\n        feedbackEl.style.display = 'block';\n        \n        if (data.isCorrect) {\n          feedbackEl.className = 'feedback correct';\n        } else {\n          feedbackEl.className = 'feedback incorrect';\n        }\n      } catch (error) {\n        console.error('Error:', error);\n        alert('Error checking answer: ' + error.message);\n      } finally {\n        document.getElementById('checkLoading').style.display = 'none';\n        checkBtn.disabled = false;\n      }\n    });\n  </script>\n</body>\n</html>`;\n\n// Convert to base64 for binary data\nconst base64Data = Buffer.from(html).toString('base64');\n\n// Return in binary format for the webhook\nreturn [{\n  binary: {\n    data: {\n      data: base64Data,\n      mimeType: 'text/html'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -200,
+        -300
+      ],
+      "id": "c756ba1e-beb8-4bf6-9652-8c8b0896dc7b",
+      "name": "Generate HTML Page"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vocabulary-game-generate",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        -100
+      ],
+      "id": "a29e579d-1bae-4985-9bf2-7faa2f373a9a",
+      "name": "vocabulary-game-generate",
+      "webhookId": "69b39c80-9434-4a3e-9f50-24e6f1ced4d2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the word from previous node\nconst word = $input.item.json.word;\n\n// Properly encode the word for a URL\nconst encodedWord = encodeURIComponent(word);\n\n// Build the properly formatted Pollinations URL\nconst imageUrl = `https://image.pollinations.ai/prompt/A%20clear,%20simple%20image%20of%20a%20${encodedWord},%20white%20background,%20minimal%20style,%20single%20object,%20photorealistic`;\n\n// Debug information\nconsole.log(\"Generated URL:\", imageUrl);\n\n// Return both word and direct image URL \nreturn {\n  word: word,\n  imageUrl: imageUrl\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -100
+      ],
+      "id": "5d6733c7-c488-43b9-93a2-e9c9f9d9aa3b",
+      "name": "Generate Image with Pollination"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50dbb963-47c2-4c81-93e1-1fde794a85a0",
+              "name": "correctWord",
+              "value": "={{ $json.body.correctWord }}",
+              "type": "string"
+            },
+            {
+              "id": "92dc60c1-01e9-41b9-a2b1-c37c694592f5",
+              "name": "guess",
+              "value": "={{ $json.body.guess }}",
+              "type": "string"
+            },
+            {
+              "id": "fbb8a66f-282e-49cf-a0d0-42f072682153",
+              "name": "language",
+              "value": "={{ $json.body.language }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -260,
+        160
+      ],
+      "id": "ffd4c60b-2699-4200-89a2-62ff2eda00ba",
+      "name": "Prepare Ollama Prompt Data"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mega-service-new-ollama-server-1:11434/api/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral:7b\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are a language evaluation assistant. Your task is to determine if a user's guess, provided in a specific language, is the correct translation for a given English word.\\n\\n1.  **English Word:** \\\"{{ $json.correctWord }}\\\"\\n2.  **User's Guess:** \\\"{{ $json.guess }}\\\"\\n3.  **Language of Guess:** {{ $json.language }}\\n\\n**Instructions:**\\n*   First, check if the User's Guess (\\\"{{ $json.guess }}\\\") is actually a word in the specified Language of Guess ({{ $json.language }}).\\n*   If it is a word in {{ $json.language }}, check if its meaning is the correct translation of the English Word (\\\"{{ $json.correctWord }}\\\").\\n*   The guess does NOT need to be identical to the most common translation, but it must be a valid word in {{ $json.language }} with the same meaning as \\\"{{ $json.correctWord }}\\\".\\n*   **Crucially: If the User's Guess is the English word itself, it is INCORRECT unless the English word happens to be identical to the correct word in {{ $json.language }}.**\\n\\n**Respond ONLY with:**\\n*   `CORRECT: [Explain why the guess is a correct translation in the specified language]`\\n*   `INCORRECT: [Explain why the guess is wrong (e.g., wrong language, wrong meaning, not a word)]`\\n\\nKeep the explanation brief (1-2 sentences).\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -40,
+        160
+      ],
+      "id": "eca392f1-331b-4ae1-9d3d-bea387404d79",
+      "name": "Verify Word with Ollama"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw response data from the HTTP Request node\nconst rawResponseData = $input.item.json.data || $input.item.json; \nlet feedback = \"Could not determine if answer is correct.\";\nlet accumulatedContent = \"\"; // Variable to store combined content\n\ntry {\n  // Check if the response is a string (likely streamed JSON)\n  if (typeof rawResponseData === 'string') {\n    // Split the streamed response into individual JSON lines\n    const jsonLines = rawResponseData.trim().split('\\n');\n    \n    // Iterate through each line, parse JSON, and accumulate content\n    for (const line of jsonLines) {\n      if (line.trim()) { // Ensure line is not empty\n        try {\n          const parsedLine = JSON.parse(line);\n          if (parsedLine && parsedLine.message && parsedLine.message.content) {\n            accumulatedContent += parsedLine.message.content; // Append content\n          }\n        } catch (parseError) {\n          console.warn(\"Could not parse JSON line:\", line, parseError);\n        }\n      }\n    }\n    \n    if (!accumulatedContent) {\n       console.log(\"Could not accumulate any content from streamed response.\");\n    }\n    \n  } \n  // Check if it's already a parsed object (non-streamed response)\n  else if (typeof rawResponseData === 'object' && rawResponseData !== null) {\n     // Check if it's wrapped in 'data'\n     const potentialData = rawResponseData.data || rawResponseData;\n     if (potentialData.message && potentialData.message.content) {\n        accumulatedContent = potentialData.message.content; // Use content directly\n     } else {\n        console.log(\"Could not find message.content in the direct JSON object:\", JSON.stringify(rawResponseData));\n     }\n  } else {\n     console.log(\"Unexpected response format:\", typeof rawResponseData, JSON.stringify(rawResponseData));\n  }\n\n  // Use the accumulated content if available\n  if (accumulatedContent) {\n     feedback = accumulatedContent.trim(); // Use the combined text\n  } else {\n     feedback = \"Error: Could not parse AI response.\";\n     console.log(\"Failed to extract content from Ollama response.\");\n  }\n\n} catch (error) {\n  console.error(\"Error parsing Ollama response:\", error);\n  console.error(\"Raw response data:\", rawResponseData);\n  feedback = \"Error parsing AI response: \" + error.message;\n}\n\n// Determine if correct based on the response starting with \"CORRECT:\"\nconst isCorrect = feedback.trim().startsWith(\"CORRECT:\");\n\n// Add HTML formatting to the feedback\nif (isCorrect) {\n  feedback = feedback.replace(\"CORRECT:\", \"<strong>CORRECT:</strong>\");\n} else {\n  // Ensure INCORRECT is handled even if parsing failed or content was missing\n  if (!feedback.trim().startsWith(\"INCORRECT:\") && !isCorrect) {\n     // Prepend INCORRECT if it wasn't already there and wasn't correct\n     feedback = \"<strong>INCORRECT:</strong> \" + feedback; \n  } else {\n     // Just format if it already starts with INCORRECT\n     feedback = feedback.replace(\"INCORRECT:\", \"<strong>INCORRECT:</strong>\");\n  }\n}\n\n// Return formatted response\nreturn {\n  isCorrect: isCorrect,\n  feedback: feedback\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        160
+      ],
+      "id": "73c98281-0017-47ca-a650-4ce416ed3eb4",
+      "name": "Format Check Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define all uppercase letters\nconst letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';\n\n// Prepare an array for the results\nconst results = [];\n\n// Loop through each incoming item\nfor (const item of items) {\n  // Get a random index\n  const randomIndex = Math.floor(Math.random() * letters.length);\n  // Select the letter\n  const randomLetter = letters[randomIndex];\n\n  // Add the random letter to the current item's JSON data\n  item.json.randomLetter = randomLetter;\n\n  // Add the modified item to our results array\n  results.push(item);\n}\n\n// Return all the modified items\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -100
+      ],
+      "id": "36f55916-d67f-42c2-9401-66f167b75cd2",
+      "name": "Random Letter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Vocabulary-Game": {
+      "main": [
+        [
+          {
+            "node": "Generate HTML Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Random Word from Ollama": {
+      "main": [
+        [
+          {
+            "node": "Extract Random Word",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Random Word": {
+      "main": [
+        [
+          {
+            "node": "Generate Image with Pollination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Word Check": {
+      "main": [
+        [
+          {
+            "node": "Prepare Ollama Prompt Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vocabulary-game-generate": {
+      "main": [
+        [
+          {
+            "node": "Random Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Ollama Prompt Data": {
+      "main": [
+        [
+          {
+            "node": "Verify Word with Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Word with Ollama": {
+      "main": [
+        [
+          {
+            "node": "Format Check Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Letter": {
+      "main": [
+        [
+          {
+            "node": "Get Random Word from Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a6664d77-14da-4262-ad6e-53fe8ba192ca",
+  "meta": {
+    "instanceId": "cfc8362129379adb654c81f91734970bc7f0bb80b1128b10179a36676c4109b3"
+  },
+  "id": "u4Ky0BwJ4PKXLPkC",
+  "tags": []
+}

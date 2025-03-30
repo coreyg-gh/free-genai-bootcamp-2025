@@ -1,5 +1,5 @@
-# Use specific Python slim image
-FROM python:3.12-slim
+# Use Python 3.10 slim image
+FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
@@ -15,10 +15,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker cache
-COPY /app/requirements.txt .
+COPY ./app/requirements.txt .
 
-# Install dependencies
+# Install dependencies with specific versions
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Find the correct path to pushpull.py and modify it
+RUN DOCARRAY_PATH=$(python -c "import sys; try: import docarray; import os; print(os.path.dirname(docarray.__file__)); except Exception: sys.exit(0)") || true && \
+    if [ -n "$DOCARRAY_PATH" ]; then \
+        sed -i 's/def _get_cloud_api():/def _get_cloud_api():\n    return ""/g' "$DOCARRAY_PATH/array/mixins/io/pushpull.py"; \
+    fi
 
 # Copy the rest of the application
 COPY /app/. .

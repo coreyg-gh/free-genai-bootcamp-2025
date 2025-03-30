@@ -1,0 +1,362 @@
+{
+  "name": "Song Learning App",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.lyrics.ovh/v1/{{encodeURIComponent($json.body.artist)}}/{{encodeURIComponent($json.body.songTitle)}}\n",
+        "allowUnauthorizedCerts": true,
+        "options": {},
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "no_html",
+              "value": "1"
+            },
+            {
+              "name": "no_redirect",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "name": "Lyrics Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -1240,
+        -1060
+      ],
+      "id": "3d91ce7c-7c4b-421e-a021-ad5b43576660",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "httpMethod": [
+          "GET"
+        ],
+        "path": "song-learning",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "name": "Webhook-GET-Form",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -1440
+      ],
+      "id": "c35592d5-9e2f-4dcd-bcc2-73e61fb09447",
+      "webhookId": "2a99bf7b-ec5a-43cf-84e8-030e31052063"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Song Learning</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            max-width: 800px;\n            margin: 40px auto; /* Added top/bottom margin */\n            padding: 20px;\n            background-color: #f4f7f6; /* Added background color */\n        }\n        .container { /* Added container for better structure */\n            background-color: #fff;\n            padding: 30px;\n            border-radius: 8px;\n            box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n        }\n        h1 {\n             margin-bottom: 25px; /* Added margin below h1 */\n             color: #333;\n        }\n        .form-group {\n            margin-bottom: 20px; /* Increased margin */\n        }\n        label {\n            display: block;\n            margin-bottom: 8px; /* Increased margin */\n            font-weight: bold; /* Made labels bold */\n            color: #555;\n        }\n        input[type='text'], select {\n            width: 100%;\n            padding: 10px; /* Increased padding */\n            border: 1px solid #ccc; /* Slightly darker border */\n            border-radius: 4px;\n            box-sizing: border-box; /* Include padding in width */\n            font-size: 1em;\n        }\n        button {\n            background-color: #4CAF50;\n            color: white;\n            padding: 12px 20px; /* Increased padding */\n            border: none;\n            border-radius: 4px;\n            cursor: pointer;\n            font-size: 1.1em; /* Slightly larger font */\n            transition: background-color 0.3s ease; /* Added transition */\n        }\n        button:hover {\n            background-color: #45a049;\n        }\n        .back-link { /* Style for the back link */\n            display: block;\n            margin-bottom: 25px; /* Space above the title */\n            text-decoration: none;\n            color: #3498db;\n            font-size: 0.9em;\n        }\n        .back-link:hover {\n            text-decoration: underline;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\"> \n        <a href=\"/webhook/language-hub\" class=\"back-link\">← Back to Language Hub</a>\n        <h1>Song Learning App</h1>\n        <form action=\"/webhook/song-learning-post\" method=\"POST\">\n            <div class=\"form-group\">\n                <label for=\"artist\">Enter Artist:</label>\n                <input type=\"text\" id=\"artist\" name=\"artist\" required placeholder=\"Enter the artist name...\">\n            </div>\n            <div class=\"form-group\">\n                <label for=\"songTitle\">Enter Song Title:</label>\n                <input type=\"text\" id=\"songTitle\" name=\"songTitle\" required placeholder=\"Enter the song title...\">\n            </div>\n            <div class=\"form-group\">\n                <label for=\"targetLanguage\">Select Target Language:</label>\n                <select id=\"targetLanguage\" name=\"targetLanguage\" required>\n                    <option value=\"\">Choose a language...</option>\n                    <option value=\"Spanish\">Spanish</option>\n                    <option value=\"French\">French</option>\n                    <option value=\"German\">German</option>\n                    <option value=\"Italian\">Italian</option>\n                    <option value=\"Japanese\">Japanese</option>\n                    <option value=\"Chinese\">Chinese</option>\n                    {/* Add more languages if needed */}\n                </select>\n            </div>\n            <button type=\"submit\">Search Song</button>\n        </form>\n    </div> \n</body>\n</html>",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "name": "Respond to Webhook-Search-Form",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1160,
+        -1440
+      ],
+      "id": "0a14dec5-2ce4-4bfe-b74c-271338957657"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "httpMethod": [
+          "POST"
+        ],
+        "path": "song-learning-post",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryBinary",
+        "options": {
+          "rawBody": false,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Webhook-POST-Search",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        -1060
+      ],
+      "id": "938b7b3c-b509-4c46-ae77-a7b540eda943",
+      "webhookId": "6a9d8a23-4183-407e-8b99-bd97fbfb37e0"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get lyrics from the previous node\nconst lyrics = $json.lyrics;\nif (!lyrics) {\n    throw new Error(\"No lyrics found.\");\n}\n\n// Normalize text: Convert to lowercase, remove punctuation\nconst normalized = lyrics.toLowerCase().replace(/[^a-z\\s]/g, \"\");\n// Split into words\nconst words = normalized.split(/\\s+/).filter(word => word !== \"\");\n\n// Count occurrences\nconst counts = {};\nwords.forEach(word => {\n    counts[word] = (counts[word] || 0) + 1;\n});\n\n// Convert to array, sort by frequency, and take top 20\nconst topWords = Object.keys(counts)\n    .map(word => ({ word, count: counts[word] }))\n    .sort((a, b) => b.count - a.count)\n    .slice(0, 20);\n\n// Preserve the target language from initial input\nconst targetLanguage = $json.body?.targetLanguage || \"English\";\n\n// Return structured data for the next node\nreturn [{\n    json: {\n        topWords,\n        targetLanguage,\n        lyrics // Optional: Include lyrics in response\n    }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -840,
+        -1220
+      ],
+      "id": "1d868b0f-2672-44d7-b043-95938e55afae",
+      "name": "Code-Top-Words"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mega-service-new-ollama-server-1:11434/api/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($node[\"Format Ollama Request\"].json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -460,
+        -1220
+      ],
+      "id": "fc90a5b4-eb82-46d2-a7bb-6bd87c9df705",
+      "name": "HTTP Request - LLM Translate",
+      "retryOnFail": false,
+      "maxTries": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all()[0].json;\nconst words = input.topWords.map(item => item.word).join(', ');\nconst targetLanguage = $('Webhook-POST-Search').item.json.body.targetLanguage;\n\nreturn {\n  json: {\n    model: \"mistral:7b\",\n    messages: [\n      {\n        role: \"system\",\n        content: \"You are a professional translator. Translate the provided words to the target language.  Only return the original word and the translated word in separated by a : character, the original word must be on the left and the translated word on the right.  Do not provide any explanations or extra information except for the two words.\"\n      },\n      {\n        role: \"user\",\n        content: `Translate these words to ${targetLanguage}: ${words}`\n      }\n    ],\n    stream: false\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        -1220
+      ],
+      "id": "94454cc9-d624-4422-80c6-a93ee7c7b5ab",
+      "name": "Format Ollama Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse input data\n// Ensure this input structure is correct based on the node preceding this one\nconst input = $input.all()[0]?.json || $input.all()[0] || {}; \n\n// Get target language from the webhook node - adjust node name if needed\n//const webhookNodeName = \"Webhook-POST-Search\"; \n//const targetLanguage = $node[webhookNodeName].item.json.body.targetLanguage || 'Unknown Language';\n\nconst targetLanguage = $('Webhook-POST-Search').item.json.body.targetLanguage;\n\n// Extract translation text - adjust based on actual input structure\nlet translationText = '';\nif (Array.isArray(input) && input[0]?.message?.content) {\n  translationText = input[0].message.content;\n} else if (input.message?.content) { // Check if it's directly on the input\n  translationText = input.message.content;\n} else if (typeof input === 'string') { // Handle case where input might just be the text\n  translationText = input;\n} else {\n  console.warn(\"Could not find translation text in input:\", JSON.stringify(input));\n}\n\n\n// Process the colon-separated format\nconst lines = translationText.split('\\n');\nconst wordPairs = [];\n\nfor (const line of lines) {\n  const trimmedLine = line.trim();\n  \n  // Skip empty lines\n  if (trimmedLine.length === 0) continue;\n  \n  // Split by \":\" for this format (original : translation)\n  const parts = trimmedLine.split(':');\n  \n  if (parts.length >= 2) {\n    // Handle cases where translation might contain colons\n    const original = parts[0].trim();\n    const translation = parts.slice(1).join(':').trim(); // Join remaining parts\n    \n    if (original && translation) {\n      wordPairs.push({\n        original: original,\n        translation: translation\n      });\n    }\n  }\n}\n\n// Generate safe JSON for passing to JavaScript\nconst safeWordPairsJson = JSON.stringify(wordPairs.map(pair => ({\n  original: pair.original.replace(/\"/g, '\\\\\"'), // Escape quotes in original\n  translation: pair.translation.replace(/\"/g, '\\\\\"') // Escape quotes in translation\n}))).replace(/'/g, \"\\\\'\"); // Escape single quotes for the outer JS string\n\n// Generate HTML with proper script placement and Back link\nconst html = `<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Translation Results</title>\n  <style>\n    body{font-family:Arial,sans-serif;padding:20px;background:#f8f9fa}\n    .container{max-width:800px;margin:40px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}\n    h1{color:#333;font-size:24px;margin-bottom:20px}\n    table{width:100%;border-collapse:collapse;margin-top:20px;table-layout:fixed}\n    th{background:#4285f4;color:#fff;padding:12px;text-align:left}\n    th.col-original{width:35%}\n    th.col-translation{width:45%}\n    th.col-action{width:20%}\n    td{padding:10px;border-bottom:1px solid #e0e0e0;vertical-align:middle}\n    tr:nth-child(even){background-color:#f2f2f2}\n    .speak-btn{background:#4285f4;color:white;border:none;border-radius:4px;padding:2px 8px;cursor:pointer}\n    .speak-btn:hover{background:#3b78e7}\n    .action-cell{position:relative;white-space:nowrap}\n    .loading{color:#666;visibility:hidden;margin-left:10px}\n    .loading.visible{visibility:visible}\n    #debug{background:#f5f5f5;padding:10px;border:1px solid #ddd;margin-top:20px;font-family:monospace;white-space:pre-wrap;display:none}\n    .new-search-btn{background:#4CAF50;color:white;padding:10px 16px;border:none;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:20px;display:inline-block; text-decoration: none;}\n    .new-search-btn:hover{background:#45a049}\n    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}\n    .header-row h1{margin:0}\n    .back-link { /* Style for the back link */\n        display: block; \n        margin-bottom: 25px; /* Space above the title */\n        text-decoration: none;\n        color: #3498db;\n        font-size: 0.9em;\n        text-align: left; /* Align to the left */\n    }\n    .back-link:hover {\n        text-decoration: underline;\n    }\n  </style>\n  \n  <!-- Move JavaScript to head with defer attribute -->\n  <script defer>\n    // Use window.onload to ensure the DOM is fully loaded before accessing elements\n    window.onload = function() {\n      // Debug area setup - keep the code but don't show the button\n      const debugDiv = document.createElement('div');\n      debugDiv.id = 'debug';\n      debugDiv.style.display = 'none'; // Keep hidden by default\n      document.body.appendChild(debugDiv);\n      \n      // Log function for debugging - still functional but hidden\n      window.logDebug = function(message) {\n        const debug = document.getElementById('debug');\n        debug.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';\n        console.log(message); // Keep console logging for developer troubleshooting\n      };\n      \n      // Audio player setup\n      window.audioPlayer = new Audio();\n      \n      // Add event listener to hide \"Speaking...\" when audio finishes\n      audioPlayer.addEventListener('ended', function() {\n        // Hide all loading indicators when audio ends\n        document.querySelectorAll('.loading').forEach(function(el) {\n          el.classList.remove('visible');\n        });\n      });\n      \n      // Define the speak function - attach to window to ensure global scope\n      window.speakText = async function(text, language, buttonId) {\n        logDebug('Button clicked! Will request speech for: ' + text);\n        \n        // Get elements\n        const loadingElement = document.getElementById('loading-' + buttonId);\n        const buttonElement = document.getElementById('btn-' + buttonId);\n        \n        // Update UI - use visibility instead of display to maintain layout\n        loadingElement.classList.add('visible');\n        buttonElement.disabled = true;\n        \n        try {\n          // Call SpeechT5 service with corrected payload format\n          const url = 'http://localhost:7055/v1/audio/speech';\n          logDebug('Sending request to: ' + url);\n          \n          // Update payload to match the working curl example\n          const payload = {\n            input: text\n          };\n          logDebug('Request payload: ' + JSON.stringify(payload));\n          \n          const response = await fetch(url, {\n            method: 'POST',\n            headers: {\n              'Content-Type': 'application/json'\n            },\n            body: JSON.stringify(payload)\n          });\n          \n          logDebug('Response status: ' + response.status);\n          \n          if (!response.ok) {\n            throw new Error('Server responded with status: ' + response.status);\n          }\n          \n          // Handle the audio response - it's returned directly as audio data\n          const blob = await response.blob();\n          const audioUrl = URL.createObjectURL(blob);\n          logDebug('Playing audio blob');\n          audioPlayer.src = audioUrl;\n          audioPlayer.play();\n          \n          // In case audio doesn't trigger the 'ended' event, set a timeout\n          setTimeout(function() {\n            buttonElement.disabled = false;\n            loadingElement.classList.remove('visible');\n          }, 3000); // Hide \"Speaking...\" after 3 seconds as fallback\n          \n        } catch (error) {\n          logDebug('ERROR: ' + error.message);\n          loadingElement.innerHTML = '<span style=\"color:red\">Error: ' + error.message + '</span>';\n          loadingElement.classList.add('visible');\n          \n          // Hide error message after 3 seconds\n          setTimeout(function() {\n            loadingElement.classList.remove('visible');\n            // Restore original text\n            loadingElement.innerHTML = 'Speaking...'; \n          }, 3000);\n          \n          buttonElement.disabled = false;\n        }\n      };\n      \n      // Add click listeners to all buttons programmatically instead of using inline onclick\n      // Use the JSON data passed into the script\n      const wordPairs = JSON.parse('${safeWordPairsJson}'); \n      const language = '${targetLanguage.toLowerCase()}';\n      \n      wordPairs.forEach((pair, index) => {\n        const button = document.getElementById('btn-' + index);\n        if (button) {\n          button.addEventListener('click', function() {\n            // Hide any previously displayed loading indicators or error messages\n            document.querySelectorAll('.loading').forEach(function(el) {\n              el.classList.remove('visible');\n              // Restore original text if it was replaced by an error\n              if (el.innerHTML.includes('Error:')) {\n                 el.innerHTML = 'Speaking...';\n              }\n            });\n            \n            window.speakText(pair.translation, language, index);\n          });\n        }\n      });\n      \n      logDebug('Page loaded and speech buttons initialized');\n    };\n  </script>\n</head>\n<body>\n  <div class=\"container\">\n    <a href=\"/webhook/language-hub\" class=\"back-link\">← Back to Language Hub</a> \n    <div class=\"header-row\">\n      <h1>Translation Results to ${targetLanguage}</h1>\n    </div>\n    \n    <!-- New search button -->\n    <a href=\"http://localhost:5678/webhook/song-learning\" class=\"new-search-btn\">Search for a new Song</a>\n    \n    <table>\n      <tr>\n        <th class=\"col-original\">Original</th>\n        <th class=\"col-translation\">Translation</th>\n        <th class=\"col-action\">Action</th>\n      </tr>\n      ${wordPairs.map((pair, index) => `\n      <tr>\n        <td>${pair.original}</td>\n        <td>${pair.translation}</td>\n        <td class=\"action-cell\">\n          <button id=\"btn-${index}\" class=\"speak-btn\">🔊 Speak</button>\n          <span id=\"loading-${index}\" class=\"loading\">Speaking...</span>\n        </td>\n      </tr>\n      `).join('')}\n    </table>\n  </div>\n</body>\n</html>`;\n\n// Return as binary data\nreturn [{\n  json: {}, // Keep json empty if only returning binary\n  binary: {\n    data: {\n      data: Buffer.from(html).toString('base64'),\n      mimeType: 'text/html',\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        -1220
+      ],
+      "id": "f289b9a6-9158-450e-bf5d-7667ec5b4155",
+      "name": "Code-format-LLM-Response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1f6409cc-c049-4249-ba54-b6f22c174b17",
+              "leftValue": "={{$json.lyrics !== undefined && $json.lyrics !== \"\"}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1020,
+        -1060
+      ],
+      "id": "3a84418c-4103-49a6-bd74-81e614466163",
+      "name": "If Lyrics Exist"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get search parameters from webhook\n// Adjust node name if your webhook node is named differently\nconst webhookNodeName = \"Webhook-POST-Search\"; \nconst searchedArtist = $node[webhookNodeName]?.json?.body?.artist || \"unknown artist\";\nconst searchedTitle = $node[webhookNodeName]?.json?.body?.songTitle || \"unknown song\";\n\n// Get any error details (if available)\n// Adjust node name if your lyrics search node is named differently\nconst lyricsSearchNodeName = \"Lyrics Search\"; \nlet errorReason = \"No lyrics found\";\nif ($node[lyricsSearchNodeName]?.error) {\n  errorReason = \"API Error: \" + $node[lyricsSearchNodeName].error.message;\n}\n\n// Create error HTML with Back to Hub link\nconst errorHtml = `<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Song Not Found</title>\n  <style>\n    body{font-family:Arial,sans-serif;padding:20px;background:#f8f9fa}\n    .container{max-width:600px;margin:40px auto;background:#fff;padding:30px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);text-align:center}\n    h1{color:#d9534f;font-size:24px;margin-bottom:20px}\n    p{color:#333;font-size:16px;line-height:1.5;margin-bottom:25px}\n    .search-btn{background:#4CAF50;color:white;padding:12px 20px;border:none;border-radius:4px;font-size:16px;cursor:pointer;display:inline-block;text-decoration:none; margin-top: 10px;}\n    .search-btn:hover{background:#45a049}\n    .details{color:#666;font-size:14px;margin-top:20px;font-style:italic}\n    .back-link { /* Style for the back link */\n        display: block; \n        margin-bottom: 25px; /* Space above the title */\n        text-decoration: none;\n        color: #3498db;\n        font-size: 0.9em;\n        text-align: left; /* Align to the left */\n    }\n    .back-link:hover {\n        text-decoration: underline;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <a href=\"/webhook/language-hub\" class=\"back-link\">← Back to Language Hub</a> \n    <h1>Song Lyrics Not Found</h1>\n    <p>Sorry, we couldn't find lyrics for the song you requested. This could be because:</p>\n    <ul style=\"text-align:left;margin-bottom:25px\">\n      <li>The song title or artist name might be misspelled</li>\n      <li>This song might not be in our lyrics database</li>\n      <li>The song might be very new or unreleased</li>\n    </ul>\n    <p>Would you like to try searching for another song?</p>\n    <a href=\"http://localhost:5678/webhook/song-learning\" class=\"search-btn\">Search for a different song</a>\n    <p class=\"details\">You searched for: \"${searchedTitle}\" by \"${searchedArtist}\"<br>${errorReason}</p>\n  </div>\n</body>\n</html>`;\n\n// Return binary data for the webhook response\nreturn [{\n  json: { success: false }, // Keep this if needed, or remove if just returning binary\n  binary: {\n    data: {\n      data: Buffer.from(errorHtml).toString('base64'),\n      mimeType: 'text/html'\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        -1000
+      ],
+      "id": "6d0e0559-be07-408a-b6f5-6a2eaab1e4b0",
+      "name": "Create Search Error Page"
+    },
+    {
+      "parameters": {
+        "content": "## Initial web form"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1740,
+        -1460
+      ],
+      "typeVersion": 1,
+      "id": "32bab028-bc42-4bd9-84c1-7fecb4858350",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Perform lyric search and translations"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1740,
+        -1080
+      ],
+      "typeVersion": 1,
+      "id": "d7ae1bbc-e5fe-4f69-9b92-72563414ff7f",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Lyrics Search": {
+      "main": [
+        [
+          {
+            "node": "If Lyrics Exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Lyrics Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook-GET-Form": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook-Search-Form",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Webhook-POST-Search": {
+      "main": [
+        [
+          {
+            "node": "Lyrics Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code-Top-Words": {
+      "main": [
+        [
+          {
+            "node": "Format Ollama Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - LLM Translate": {
+      "main": [
+        [
+          {
+            "node": "Code-format-LLM-Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Ollama Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - LLM Translate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code-format-LLM-Response": {
+      "main": [
+        []
+      ]
+    },
+    "If Lyrics Exist": {
+      "main": [
+        [
+          {
+            "node": "Code-Top-Words",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Search Error Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/St_Johns",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 600,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true
+  },
+  "versionId": "b7775ded-a440-4fc2-a284-5ddfd912b715",
+  "meta": {
+    "instanceId": "cfc8362129379adb654c81f91734970bc7f0bb80b1128b10179a36676c4109b3"
+  },
+  "id": "k5nP9kZcId3pOnXq",
+  "tags": []
+}
