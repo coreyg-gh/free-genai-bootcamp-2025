@@ -1,5 +1,6 @@
 networks:
   megaservice_network:
+    name: megaservice_network
     driver: bridge
 services:
   megaservice:
